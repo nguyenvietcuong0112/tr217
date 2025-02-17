@@ -1,0 +1,72 @@
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+    id 'org.jetbrains.kotlin.android'
+}
+android {
+    namespace 'com.moneysaving.moneylove.moneymanager.finance'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.moneysaving.moneylove.moneymanager.finance"
+        minSdk 24
+        targetSdk 34
+        versionCode 100
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        def formattedDate = new Date().format('MM.dd.yyyy')
+        archivesBaseName = "TR203_AIMoneyTracker_v${versionName}_(${versionCode})_${formattedDate}"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    dataBinding {
+        enabled true
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    testImplementation 'junit:junit:4.14-SNAPSHOT'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+
+    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    implementation 'com.google.firebase:firebase-auth:23.2.0'
+    implementation 'com.github.midorikocak:currency-picker-android:1.2.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    implementation 'com.airbnb.android:lottie:6.5.0'
+
+    implementation 'com.google.android.ads.consent:consent-library:1.0.8'
+    implementation 'com.google.android.ump:user-messaging-platform:3.1.0'
+    //ads
+    implementation 'com.github.nguyentruongnvt72:ads-mallegan-lib:1.1.0'
+    implementation platform('com.google.firebase:firebase-bom:32.7.2')
+    implementation 'com.google.android.gms:play-services-ads:23.6.0'
+    implementation 'com.google.firebase:firebase-analytics:22.2.0'
+    implementation 'com.google.firebase:firebase-crashlytics:19.4.0'
+    implementation 'com.google.firebase:firebase-database:21.0.0'
+
+    //fb sdk
+    implementation 'com.facebook.android:facebook-android-sdk:18.0.2'
+    implementation 'com.appsflyer:af-android-sdk:6.16.0'
+    implementation 'com.appsflyer:adrevenue:6.9.1'
+
+}

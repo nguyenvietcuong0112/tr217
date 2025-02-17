@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    //dev
+    <string name="app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+
+    <string name="inter_splash" translatable="false"></string>
+    <string name="inter_intro" translatable="false"></string>
+    <string name="inter_home" translatable="false"></string>
+
+    <string name="native_onboarding1" translatable="false"></string>
+    <string name="native_onboarding2" translatable="false"></string>
+    <string name="native_onboarding3" translatable="false"></string>
+    <string name="native_onboarding4" translatable="false"></string>
+    <string name="native_home" translatable="false"></string>
+    <string name="native_language" translatable="false"></string>
+    <string name="native_language_select" translatable="false"></string>
+
+    <string name="native_view_transaction" translatable="false"></string>
+    <string name="native_edit_transaction" translatable="false"></string>
+
+    <string name="open_resume" translatable="false"></string>
+    <string name="banner_collap" translatable="false"></string>
+
+    <string name="AF_DEV_KEY" translatable="false">LikYKU2zUYTct7BoQ7MuJY</string>
+    <string name="facebook_app_id" translatable="false">1234</string>
+    <string name="facebook_client_token" translatable="false">56789</string>
+
+    //prod
+<!--    <string name="app_id" translatable="false">ca-app-pub-5839511744003864~7187215718</string>-->
+
+<!--    <string name="inter_splash" translatable="false">ca-app-pub-5839511744003864/7789850945</string>-->
+<!--    <string name="inter_intro" translatable="false">ca-app-pub-5839511744003864/2537524261</string>-->
+<!--    <string name="inter_home" translatable="false">ca-app-pub-5839511744003864/7414446429</string>-->
+
+<!--    <string name="native_onboarding1" translatable="false">ca-app-pub-5839511744003864/4561052377</string>-->
+<!--    <string name="native_onboarding2" translatable="false">ca-app-pub-5839511744003864/8368435441</string>-->
+<!--    <string name="native_onboarding3" translatable="false">ca-app-pub-5839511744003864/8308725694</string>-->
+<!--    <string name="native_onboarding4" translatable="false">ca-app-pub-5839511744003864/4429190436</string>-->
+<!--    <string name="native_home" translatable="false">ca-app-pub-5839511744003864/8967201248</string>-->
+
+<!--    <string name="native_language" translatable="false">ca-app-pub-5839511744003864/1471854600</string>-->
+<!--    <string name="native_language_select" translatable="false">ca-app-pub-5839511744003864/1115188424</string>-->
+
+<!--    <string name="native_view_transaction" translatable="false">ca-app-pub-5839511744003864/8610535066</string>-->
+<!--    <string name="native_edit_transaction" translatable="false">ca-app-pub-5839511744003864/5984371729</string>-->
+
+<!--    <string name="open_resume" translatable="false">ca-app-pub-5839511744003864/4009515896</string>-->
+<!--    <string name="banner_collap" translatable="false">ca-app-pub-5839511744003864/1224442599</string>-->
+
+<!--    <string name="AF_DEV_KEY" translatable="false">LikYKU2zUYTct7BoQ7MuJY</string>-->
+<!--    <string name="facebook_app_id" translatable="false">649004694455566</string>-->
+<!--    <string name="facebook_client_token" translatable="false">0a293c080ac4767098af940fe79645f5</string>-->
+
+</resources>

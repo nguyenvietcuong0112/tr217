@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Smart AI Novira MoneyMate</string>
+
+    <string-array name="months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+
+    <string name="note_continue1">Take Control of Your Finances with AI!</string>
+    <string name="note_continue2">Smart Income &amp; Expense Tracking</string>
+    <string name="note_continue3">Get Personalized Financial Insights</string>
+    <string name="note_continue4">Let’s Make Your Money Work for You!</string>
+
+    <string name="note_guide1"></string>
+    <string name="note_guide2"></string>
+    <string name="note_guide3"></string>
+    <string name="note_guide4"></string>
+</resources>

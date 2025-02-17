@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170830345024",
+    "project_id": "tr217-money-manager",
+    "storage_bucket": "tr217-money-manager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170830345024:android:aa8fc8da33616621af80a5",
+        "android_client_info": {
+          "package_name": "com.moneysaving.moneylove.moneymanager.finance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAez9TKcOJ5eGo56n98rg-Q9K-Q-v-sF8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
