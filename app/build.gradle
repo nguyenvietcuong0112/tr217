@@ -54,6 +54,9 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.airbnb.android:lottie:6.5.0'
 
+    implementation 'org.greenrobot:eventbus:3.2.0'
+
+
     implementation 'com.google.android.ads.consent:consent-library:1.0.8'
     implementation 'com.google.android.ump:user-messaging-platform:3.1.0'
     //ads

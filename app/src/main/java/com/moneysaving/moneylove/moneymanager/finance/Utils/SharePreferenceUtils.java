@@ -15,7 +15,11 @@ import java.util.List;
 public class SharePreferenceUtils {
     private static final String AI_MONEY_NAME = "AI_MONEY_NAME";
     private static final String PREFS_NAME = "CurrencyPrefs";
+
+    private static final String TRANSACTION_LIST_KEY = "transactionList";
+
     private static final String KEY_SELECTED_CURRENCY = "SelectedCurrency";
+
     private static final String PREF_NAME = "chat_prefs";
     private static final String KEY_MESSAGES = "messages";
 
@@ -49,14 +53,35 @@ public class SharePreferenceUtils {
 
 
     public void saveTransaction(TransactionModel transaction) {
-        String json = TransactionModel.toJson(transaction);
-        editor.putString(TRANSACTION_KEY, json);
-        editor.apply();
+        List<TransactionModel> transactions = getTransactionList();
+        transactions.add(transaction);
+        saveTransactionList(transactions);
     }
 
     public TransactionModel getTransaction() {
-        String json = sharePreference.getString(TRANSACTION_KEY, null);
-        return json != null ? TransactionModel.fromJson(json) : null;
+        String json = sharePreference.getString(TRANSACTION_KEY, "");
+        if (json.isEmpty()) {
+            return null;
+        }
+        return new Gson().fromJson(json, TransactionModel.class);
+    }
+
+    public void saveTransactionList(List<TransactionModel> transactions) {
+        SharedPreferences.Editor editor = sharePreference.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(transactions);
+        editor.putString(TRANSACTION_LIST_KEY, json);
+        editor.apply();
+    }
+
+    public List<TransactionModel> getTransactionList() {
+        String json = sharePreference.getString(TRANSACTION_LIST_KEY, "");
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Type type = new TypeToken<List<TransactionModel>>() {
+        }.getType();
+        return new Gson().fromJson(json, type);
     }
 
     public static boolean isOrganic(Context context) {
@@ -90,8 +115,6 @@ public class SharePreferenceUtils {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_SELECTED_CURRENCY, "");
     }
-
-
 
 
     // Phương thức lưu object bất kỳ

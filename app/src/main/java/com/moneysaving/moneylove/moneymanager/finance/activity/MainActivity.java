@@ -5,17 +5,24 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.TransactionUpdateEvent;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.BudgetFragment;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.HomeFragment;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.SettingsFragment;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.StatisticsFragment;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,24 +33,16 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvHome, tvStatistic, tvBudget, tvSettings;
 
     private Fragment activeFragment;
+    private SharePreferenceUtils sharePreferenceUtils;
+    private List<TransactionModel> transactionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharePreferenceUtils sharePreferenceUtils = new SharePreferenceUtils(this);
-        TransactionModel transaction = sharePreferenceUtils.getTransaction();
 
-        if (transaction != null) {
-            String transactionType = transaction.getTransactionType();
-            String amount = transaction.getAmount();
-            String budget = transaction.getBudget();
-            String category = transaction.getCategory();
-            String note = transaction.getNote();
-            String date = transaction.getDate();
-            String time = transaction.getTime();
-
-        }
+        sharePreferenceUtils = new SharePreferenceUtils(this);
+        transactionList = sharePreferenceUtils.getTransactionList();
 
         initializeViews();
         setupClickListeners();
@@ -104,6 +103,20 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (fragment instanceof HomeFragment) {
+            Bundle bundle = new Bundle();
+            bundle.putString("transactionList", new Gson().toJson(transactionList));
+            fragment.setArguments(bundle);
+        } else if (fragment instanceof StatisticsFragment) {
+            Bundle bundle = new Bundle();
+            bundle.putString("transactionList", new Gson().toJson(transactionList));
+            fragment.setArguments(bundle);
+        } else if (fragment instanceof BudgetFragment) {
+            Bundle bundle = new Bundle();
+            bundle.putString("transactionList", new Gson().toJson(transactionList));
+            fragment.setArguments(bundle);
+        }
+
         activeFragment = fragment;
         getSupportFragmentManager()
                 .beginTransaction()
@@ -114,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }
+
     private void updateIcons(int selectedIndex) {
         ivHome.setColorFilter(getResources().getColor(R.color.icon_inactive));
         ivStatistic.setColorFilter(getResources().getColor(R.color.icon_inactive));
@@ -143,5 +157,36 @@ public class MainActivity extends AppCompatActivity {
                 tvSettings.setTextColor(getResources().getColor(R.color.blue));
                 break;
         }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ADD_TRANSACTION_REQUEST && resultCode == RESULT_OK) {
+            if (data != null && data.hasExtra("transactionData")) {
+                String transactionJson = data.getStringExtra("transactionData");
+                TransactionModel newTransaction = TransactionModel.fromJson(transactionJson);
+
+                if (newTransaction != null) {
+                    transactionList = sharePreferenceUtils.getTransactionList();
+
+                    // Tải lại fragment hiện tại để cập nhật dữ liệu
+                    if (activeFragment instanceof HomeFragment) {
+                        loadFragment(new HomeFragment());
+                    } else if (activeFragment instanceof StatisticsFragment) {
+                        loadFragment(new StatisticsFragment());
+                    } else if (activeFragment instanceof BudgetFragment) {
+                        loadFragment(new BudgetFragment());
+                    }
+
+                    EventBus.getDefault().post(new TransactionUpdateEvent(transactionList));
+
+                    Toast.makeText(this, "Đã thêm giao dịch mới", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    public List<TransactionModel> getTransactionList() {
+        return transactionList;
     }
 }
