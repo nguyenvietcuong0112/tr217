@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class SharePreferenceUtils {
 
     private static final String COUNTER_KEY = "counter_value";
 
+    private static final String TRANSACTION_KEY = "transaction_data";
+    private SharedPreferences.Editor editor;
+
 
     private static volatile SharePreferenceUtils instance;
     private SharedPreferences sharePreference;
@@ -28,6 +32,8 @@ public class SharePreferenceUtils {
     public SharePreferenceUtils(Context context) {
         sharePreference = context.getSharedPreferences(AI_MONEY_NAME, Context.MODE_PRIVATE);
         gson = new Gson();
+        editor = sharePreference.edit();
+
     }
 
     public static SharePreferenceUtils getInstance(Context context) {
@@ -39,6 +45,18 @@ public class SharePreferenceUtils {
             }
         }
         return instance;
+    }
+
+
+    public void saveTransaction(TransactionModel transaction) {
+        String json = TransactionModel.toJson(transaction);
+        editor.putString(TRANSACTION_KEY, json);
+        editor.apply();
+    }
+
+    public TransactionModel getTransaction() {
+        String json = sharePreference.getString(TRANSACTION_KEY, null);
+        return json != null ? TransactionModel.fromJson(json) : null;
     }
 
     public static boolean isOrganic(Context context) {

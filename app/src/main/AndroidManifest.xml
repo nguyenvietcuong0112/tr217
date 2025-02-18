@@ -26,6 +26,9 @@
 
 
         <activity
+            android:name=".activity.AddTransactionActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".activity.IntroActivity"
             android:screenOrientation="portrait" />
         <activity

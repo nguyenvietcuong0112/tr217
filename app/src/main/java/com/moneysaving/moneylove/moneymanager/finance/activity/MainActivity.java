@@ -1,5 +1,6 @@
 package com.moneysaving.moneylove.moneymanager.finance.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -9,12 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.moneysaving.moneylove.moneymanager.finance.R;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.BudgetFragment;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.HomeFragment;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.SettingsFragment;
 import com.moneysaving.moneylove.moneymanager.finance.fragment.StatisticsFragment;
+import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int ADD_TRANSACTION_REQUEST = 1;
     private LinearLayout navHome, navStatistic, navBudget, navSettings;
     private ImageView fabAdd;
     private ImageView ivHome, ivStatistic, ivBudget, ivSettings;
@@ -26,6 +31,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharePreferenceUtils sharePreferenceUtils = new SharePreferenceUtils(this);
+        TransactionModel transaction = sharePreferenceUtils.getTransaction();
+
+        if (transaction != null) {
+            String transactionType = transaction.getTransactionType();
+            String amount = transaction.getAmount();
+            String budget = transaction.getBudget();
+            String category = transaction.getCategory();
+            String note = transaction.getNote();
+            String date = transaction.getDate();
+            String time = transaction.getTime();
+
+        }
 
         initializeViews();
         setupClickListeners();
@@ -66,7 +84,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         fabAdd.setOnClickListener(v -> {
-//            new AddTransactionDialog().show(getSupportFragmentManager(), "AddTransaction");
+            Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
+            startActivityForResult(intent, ADD_TRANSACTION_REQUEST);
         });
 
         navBudget.setOnClickListener(v -> {

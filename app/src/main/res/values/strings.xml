@@ -25,4 +25,10 @@
     <string name="note_guide2"></string>
     <string name="note_guide3"></string>
     <string name="note_guide4"></string>
+    <string-array name="currency_array">
+        <item>USD</item>
+        <item>EUR</item>
+        <item>VND</item>
+        <item>JPY</item>
+    </string-array>
 </resources>
