@@ -116,18 +116,18 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCategory, tvAmount;
+        TextView tvCategory, tvAmount,tvTime;
 
         TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCategory = itemView.findViewById(R.id.tv_category);
             tvAmount = itemView.findViewById(R.id.tv_amount);
-//            tvTime = itemView.findViewById(R.id.tv_time);
+            tvTime = itemView.findViewById(R.id.tv_time);
         }
 
         void bind(TransactionModel transaction) {
-            tvCategory.setText(transaction.getCategory());
-
+            tvCategory.setText(transaction.getCategoryName());
+            tvTime.setText(transaction.getTime());
             String amountPrefix = "";
             int textColor = 0;
 

@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    >
+    android:padding="16dp">
 
     <!-- Header -->
     <TextView
@@ -16,8 +15,7 @@
         android:textColor="@color/gray"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_title"
@@ -26,9 +24,9 @@
         android:text="Add"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/tv_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_save"
@@ -38,7 +36,7 @@
         android:textColor="@color/blue"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_cancel" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Transaction Type -->
     <RadioGroup
@@ -46,32 +44,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tv_title"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_title">
 
         <RadioButton
-            android:id="@+id/btn_expend"
+            android:id="@+id/rb_expend"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
             android:text="Expend" />
 
         <RadioButton
-            android:id="@+id/btn_income"
+            android:id="@+id/rb_income"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Income" />
 
         <RadioButton
-            android:id="@+id/btn_loan"
+            android:id="@+id/rb_loan"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Loan" />
     </RadioGroup>
 
     <!-- Amount -->
+    <TextView
+        android:id="@+id/tv_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amount"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/rg_transaction_type"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <EditText
         android:id="@+id/et_amount"
         android:layout_width="0dp"
@@ -80,7 +89,7 @@
         android:inputType="numberDecimal"
         android:textSize="20sp"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/rg_transaction_type"
+        app:layout_constraintTop_toBottomOf="@id/tv_amount"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sp_currency" />
 
@@ -92,7 +101,8 @@
         android:entries="@array/currency_array"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rg_transaction_type" />
+        app:layout_constraintTop_toTopOf="@id/et_amount"
+        app:layout_constraintBottom_toBottomOf="@id/et_amount" />
 
     <!-- Category -->
     <TextView
@@ -100,46 +110,88 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category"
+        android:layout_marginTop="16dp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/et_amount"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Spinner
-        android:id="@+id/sp_category"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_categories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
         app:layout_constraintTop_toBottomOf="@id/tv_category"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Budget -->
-    <TextView
-        android:id="@+id/tv_budget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Budget"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/sp_category"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Spinner
-        android:id="@+id/sp_budget"
+    <!-- Lender (hiển thị khi chọn Loan) -->
+    <LinearLayout
+        android:id="@+id/layout_lender"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_budget"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/rv_categories"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tv_lender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lender"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/et_lender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Add a description"
+            android:padding="12dp" />
+    </LinearLayout>
+
+    <!-- Budget (hiển thị khi chọn Expend) -->
+    <LinearLayout
+        android:id="@+id/layout_budget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/layout_lender"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tv_budget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Budget"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/sp_budget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+    </LinearLayout>
 
     <!-- Note -->
+    <TextView
+        android:id="@+id/tv_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Note"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/layout_budget"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <EditText
         android:id="@+id/et_note"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Add a description"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/sp_budget"
+        app:layout_constraintTop_toBottomOf="@id/tv_note"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -149,6 +201,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date time"
+        android:layout_marginTop="16dp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/et_note"
         app:layout_constraintStart_toStartOf="parent" />

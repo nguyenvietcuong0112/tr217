@@ -1,0 +1,74 @@
+package com.moneysaving.moneylove.moneymanager.finance.Utils;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+public class BudgetManager {
+    private static final String PREF_NAME = "BudgetManagerPrefs";
+    private static final String KEY_BUDGETS = "budgets";
+    private static final String KEY_TOTAL_BUDGET = "total_budget";
+    private static final String KEY_TOTAL_EXPENSES = "total_expenses";
+
+    private SharedPreferences prefs;
+    private Gson gson;
+
+    public BudgetManager(Context context) {
+        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        gson = new Gson();
+    }
+
+    public void saveBudgetItem(BudgetItem item) {
+        List<BudgetItem> budgets = getBudgetItems();
+        budgets.add(item);
+        saveBudgetItems(budgets);
+    }
+
+    public List<BudgetItem> getBudgetItems() {
+        String json = prefs.getString(KEY_BUDGETS, "");
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Type type = new TypeToken<List<BudgetItem>>(){}.getType();
+        return gson.fromJson(json, type);
+    }
+
+    private void saveBudgetItems(List<BudgetItem> items) {
+        String json = gson.toJson(items);
+        prefs.edit().putString(KEY_BUDGETS, json).apply();
+    }
+
+    public void setTotalBudget(double amount) {
+        prefs.edit().putFloat(KEY_TOTAL_BUDGET, (float) amount).apply();
+    }
+
+    public double getTotalBudget() {
+        return prefs.getFloat(KEY_TOTAL_BUDGET, 0f);
+    }
+
+    public void addExpense(double amount) {
+        float currentExpenses = prefs.getFloat(KEY_TOTAL_EXPENSES, 0f);
+        prefs.edit().putFloat(KEY_TOTAL_EXPENSES, currentExpenses + (float) amount).apply();
+    }
+
+    public double getTotalExpenses() {
+        return prefs.getFloat(KEY_TOTAL_EXPENSES, 0f);
+    }
+
+    public void updateBudgetExpense(String budgetName, double amount) {
+        List<BudgetItem> budgets = getBudgetItems();
+        for (BudgetItem budget : budgets) {
+            if (budget.getName().equals(budgetName)) {
+                budget.addExpense(amount);
+                break;
+            }
+        }
+        saveBudgetItems(budgets);
+    }
+}
