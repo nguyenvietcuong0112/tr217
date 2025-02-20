@@ -61,6 +61,10 @@ public class BudgetManager {
         return prefs.getFloat(KEY_TOTAL_EXPENSES, 0f);
     }
 
+    public void setTotalExpenses(double amount) {
+        prefs.edit().putFloat(KEY_TOTAL_EXPENSES, (float) amount).apply();
+    }
+
     public void updateBudgetExpense(String budgetName, double amount) {
         List<BudgetItem> budgets = getBudgetItems();
         for (BudgetItem budget : budgets) {

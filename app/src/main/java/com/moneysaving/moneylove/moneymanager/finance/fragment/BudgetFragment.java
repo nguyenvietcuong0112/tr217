@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
@@ -27,6 +28,7 @@ import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,15 +37,17 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     private CircularProgressView mainProgressView;
     private TextView tvTotalBudget, tvExpenses;
     private ImageView ivEditBudget;
-//    private RecyclerView rvBudgets;
-    private Button  btnBudgetDetail;
+    //    private RecyclerView rvBudgets;
+    private Button btnBudgetDetail;
     private BudgetAdapter budgetAdapter;
+    private List<TransactionModel> allTransactionList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_budget, container, false);
         initializeViews(view);
         setupBudgetManager();
+        loadTransactionData();
 //        setupRecyclerView();
         setupListeners();
         updateUI();
@@ -82,7 +86,56 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         btnBudgetDetail.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), BudgetDetailActivity.class);
             startActivity(intent);
-        });    }
+        });
+    }
+
+    private void loadTransactionData() {
+        if (getArguments() == null || !getArguments().containsKey("transactionList")) {
+            return;
+        }
+
+        String transactionListJson = getArguments().getString("transactionList");
+        if (transactionListJson == null || transactionListJson.isEmpty()) {
+            return;
+        }
+
+        Type type = new TypeToken<List<TransactionModel>>() {}.getType();
+        allTransactionList = new Gson().fromJson(transactionListJson, type);
+
+        if (allTransactionList == null) {
+            allTransactionList = new ArrayList<>();
+        }
+
+        // Tính tổng chi phí từ danh sách giao dịch
+        calculateAndUpdateTotalExpenses();
+    }
+
+    private void calculateAndUpdateTotalExpenses() {
+        if (allTransactionList == null || allTransactionList.isEmpty()) {
+            return;
+        }
+//        String transactionListJson = getArguments().getString("transactionList");
+//        if (transactionListJson == null || transactionListJson.isEmpty()) {
+//            return;
+//        }
+//
+//        Type type = new TypeToken<List<TransactionModel>>() {}.getType();
+//        allTransactionList = new Gson().fromJson(transactionListJson, type);
+//
+//        if (allTransactionList == null) {
+//            allTransactionList = new ArrayList<>();
+//        }
+
+        double totalExpenseAmount = 0.0;
+        for (TransactionModel transaction : allTransactionList) {
+            if ("Expend".equals(transaction.getTransactionType())) {
+                totalExpenseAmount += Double.parseDouble(transaction.getAmount());
+            }
+        }
+
+        // Lưu tổng chi phí vào BudgetManager
+        budgetManager.setTotalExpenses(totalExpenseAmount);
+    }
 
     private void showEditBudgetDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -112,7 +165,7 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         double remaining = totalBudget - totalExpenses;
 
         // Update text views
-        tvTotalBudget.setText(String.format("$%.2f", totalBudget));
+        tvTotalBudget.setText(String.format("$%.2f", remaining));
         tvExpenses.setText(String.format("$%.2f", totalExpenses));
 //        tvRemaining.setText(String.format("$%.2f", remaining));
 
@@ -122,7 +175,7 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     }
 
     public void onTransactionAdded(TransactionModel transaction) {
-        if ("Expend".equals(transaction.getTransactionType())) {
+        if ("Expense".equals(transaction.getTransactionType())) {
             double amount = Double.parseDouble(transaction.getAmount());
             budgetManager.addExpense(amount);
 
@@ -133,7 +186,9 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
             }
 
             // Update UI
-            budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
+            if (budgetAdapter != null) {
+                budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
+            }
             updateUI();
         }
     }
