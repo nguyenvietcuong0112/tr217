@@ -39,7 +39,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     private ImageView ivEditBudget;
     //    private RecyclerView rvBudgets;
     private Button btnBudgetDetail;
-    private BudgetAdapter budgetAdapter;
     private List<TransactionModel> allTransactionList;
 
     @Override
@@ -106,7 +105,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
             allTransactionList = new ArrayList<>();
         }
 
-        // Tính tổng chi phí từ danh sách giao dịch
         calculateAndUpdateTotalExpenses();
     }
 
@@ -114,17 +112,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         if (allTransactionList == null || allTransactionList.isEmpty()) {
             return;
         }
-//        String transactionListJson = getArguments().getString("transactionList");
-//        if (transactionListJson == null || transactionListJson.isEmpty()) {
-//            return;
-//        }
-//
-//        Type type = new TypeToken<List<TransactionModel>>() {}.getType();
-//        allTransactionList = new Gson().fromJson(transactionListJson, type);
-//
-//        if (allTransactionList == null) {
-//            allTransactionList = new ArrayList<>();
-//        }
 
         double totalExpenseAmount = 0.0;
         for (TransactionModel transaction : allTransactionList) {
@@ -172,25 +159,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         // Update main progress
         int progress = totalBudget > 0 ? (int) ((remaining / totalBudget) * 100) : 0;
         mainProgressView.setProgress(progress);
-    }
-
-    public void onTransactionAdded(TransactionModel transaction) {
-        if ("Expense".equals(transaction.getTransactionType())) {
-            double amount = Double.parseDouble(transaction.getAmount());
-            budgetManager.addExpense(amount);
-
-            // Update specific budget if selected
-            String budgetName = transaction.getBudget();
-            if (!"None".equals(budgetName)) {
-                budgetManager.updateBudgetExpense(budgetName, amount);
-            }
-
-            // Update UI
-            if (budgetAdapter != null) {
-                budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
-            }
-            updateUI();
-        }
     }
 
     @Override

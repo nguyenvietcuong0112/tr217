@@ -12,12 +12,17 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
+import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetDetailActivity extends AppCompatActivity {
@@ -27,6 +32,8 @@ public class BudgetDetailActivity extends AppCompatActivity {
     private BudgetManager budgetManager;
     private BudgetAdapter budgetAdapter;
     private MaterialButton btnAddBudget;
+    private List<TransactionModel> allTransactionList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,5 +104,41 @@ public class BudgetDetailActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
+
+
+//    private void loadTransactionData() {
+//        if (getArguments() == null || !getArguments().containsKey("transactionList")) {
+//            return;
+//        }
+//
+//        String transactionListJson = getArguments().getString("transactionList");
+//        if (transactionListJson == null || transactionListJson.isEmpty()) {
+//            return;
+//        }
+//
+//        Type type = new TypeToken<List<TransactionModel>>() {}.getType();
+//        allTransactionList = new Gson().fromJson(transactionListJson, type);
+//
+//        if (allTransactionList == null) {
+//            allTransactionList = new ArrayList<>();
+//        }
+//
+//        calculateAndUpdateTotalExpenses();
+//    }
+//
+//    private void calculateAndUpdateTotalExpenses() {
+//        if (allTransactionList == null || allTransactionList.isEmpty()) {
+//            return;
+//        }
+//
+//        double totalExpenseAmountBudget = 0.0;
+//        for (TransactionModel transaction : allTransactionList) {
+//            if ("Expend".equals(transaction.getTransactionType())) {
+//                totalExpenseAmountBudget += Double.parseDouble(transaction.getAmount());
+//            }
+//        }
+//
+//        budgetManager.setTotalExpenses(totalExpenseAmountBudget);
+//    }
 
 }
