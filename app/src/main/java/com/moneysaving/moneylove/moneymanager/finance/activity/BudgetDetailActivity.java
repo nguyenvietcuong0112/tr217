@@ -3,6 +3,7 @@ package com.moneysaving.moneylove.moneymanager.finance.activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +32,7 @@ public class BudgetDetailActivity extends AppCompatActivity {
     private RecyclerView rvBudgets;
     private BudgetManager budgetManager;
     private BudgetAdapter budgetAdapter;
-    private MaterialButton btnAddBudget;
+    private ImageView btnAddBudget;
     private List<TransactionModel> allTransactionList;
 
 

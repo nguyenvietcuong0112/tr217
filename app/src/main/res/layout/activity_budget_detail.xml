@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Tổng Ngân Sách -->
     <TextView
         android:id="@+id/tv_total_budget"
         android:layout_width="wrap_content"
@@ -16,7 +15,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Chi tiêu -->
     <TextView
         android:id="@+id/tv_expenses"
         android:layout_width="wrap_content"
@@ -25,7 +23,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv_total_budget"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Số tiền còn lại -->
     <TextView
         android:id="@+id/tv_remaining"
         android:layout_width="wrap_content"
@@ -35,7 +32,6 @@
         app:layout_constraintTop_toBottomOf="@id/tv_expenses"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Tiến trình -->
     <com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView
         android:id="@+id/main_progress_view"
         android:layout_width="200dp"
@@ -45,7 +41,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <!-- Danh sách ngân sách -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_budgets"
         android:layout_width="match_parent"
@@ -54,11 +49,11 @@
         app:layout_constraintBottom_toTopOf="@id/btn_add_budget"
         android:layout_marginTop="16dp"/>
 
-    <!-- Nút Thêm Ngân Sách -->
-    <com.google.android.material.button.MaterialButton
+    <ImageView
         android:id="@+id/btn_add_budget"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_40sdp"
+        android:background="@color/red"
         android:text="Add Budget"
         android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"/>

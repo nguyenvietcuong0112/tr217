@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sharePreferenceUtils = new SharePreferenceUtils(this);
+        sharePreferenceUtils.incrementCounter();
+
+
+        sharePreferenceUtils = new SharePreferenceUtils(this);
         transactionList = sharePreferenceUtils.getTransactionList();
 
         initializeViews();

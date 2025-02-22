@@ -39,11 +39,11 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     private SharePreferenceUtils sharePreferenceUtils;
 
-    private TextView tvCancel, tvSave;
+    private TextView tvCancel, tvSave,tvCurrency;
     private RadioGroup rgTransactionType;
     private RadioButton rbExpend, rbIncome, rbLoan;
     private EditText etAmount, etNote, etLender;
-    private Spinner spBudget, spCurrency;
+    private Spinner spBudget;
     private Button btnDate, btnTime;
     private RecyclerView rvCategories;
     private LinearLayout layoutLender, layoutBudget;
@@ -72,7 +72,6 @@ public class AddTransactionActivity extends AppCompatActivity {
 
 
         initViews();
-        // Khởi tạo danh sách danh mục
         initCategories();
         // Thiết lập sự kiện
         setupListeners();
@@ -118,12 +117,16 @@ public class AddTransactionActivity extends AppCompatActivity {
         etNote = findViewById(R.id.et_note);
         etLender = findViewById(R.id.et_lender);
         spBudget = findViewById(R.id.sp_budget);
-        spCurrency = findViewById(R.id.sp_currency);
+        tvCurrency = findViewById(R.id.tv_currency);
         btnDate = findViewById(R.id.btn_date);
         btnTime = findViewById(R.id.btn_time);
         rvCategories = findViewById(R.id.rv_categories);
         layoutLender = findViewById(R.id.layout_lender);
         layoutBudget = findViewById(R.id.layout_budget);
+
+        String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
+        if (currentCurrency.isEmpty()) currentCurrency = "VND";
+        tvCurrency.setText(currentCurrency);
     }
 
     private void setupListeners() {
@@ -262,10 +265,11 @@ public class AddTransactionActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
             return;
         }
+        String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
+        if (currentCurrency.isEmpty()) currentCurrency = "USD";
 
         // Lấy dữ liệu từ các trường
         String amount = etAmount.getText().toString();
-        String currency = spCurrency.getSelectedItem().toString();
         String note = etNote.getText().toString();
         String budget = "None";
 
@@ -277,7 +281,7 @@ public class AddTransactionActivity extends AppCompatActivity {
         TransactionModel transaction = new TransactionModel(
                 transactionType,
                 amount,
-                currency,
+                currentCurrency,
                 selectedCategory.getName(),
                 selectedCategory.getIconResource(),
                 budget,
@@ -335,8 +339,6 @@ public class AddTransactionActivity extends AppCompatActivity {
                     break;
             }
 
-            // Thiết lập spinner currency
-            setSpinnerSelection(spCurrency, transaction.getCurrency());
 
             // Thiết lập spinner budget nếu là Expend
             if ("Expend".equals(transaction.getTransactionType())) {

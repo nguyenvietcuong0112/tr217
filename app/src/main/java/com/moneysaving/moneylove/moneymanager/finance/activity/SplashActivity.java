@@ -61,14 +61,12 @@ public class SplashActivity extends BaseActivity {
                         e.printStackTrace();
                     }
                 }
-//                if (SharePreferenceUtils.getInstance(SplashActivity.this).isLanguageSetting()) {
-//                    startActivity(new Intent(SplashActivity.this, IntroActivity.class));
-//                } else {
-//                if (counterValue == 1) {
-//                    startActivity(new Intent(SplashActivity.this, InterestActivity.class));
-//                } else {
+
+                if (counterValue == 1) {
+                    startActivity(new Intent(SplashActivity.this, InterestActivity.class));
+                } else {
                     startActivity(new Intent(SplashActivity.this, LanguageActivity.class));
-//                }
+                }
 //
                 finish();
             }

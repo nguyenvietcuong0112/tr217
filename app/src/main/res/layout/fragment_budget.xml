@@ -67,10 +67,11 @@
                 android:layout_gravity="center"/>
 
             <!-- Budget Detail Button -->
-            <com.google.android.material.button.MaterialButton
+            <ImageView
                 android:id="@+id/btn_budget_detail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
+                android:background="@color/black"
                 android:text="Budget Detail"
                 android:layout_marginTop="16dp"/>
         </LinearLayout>

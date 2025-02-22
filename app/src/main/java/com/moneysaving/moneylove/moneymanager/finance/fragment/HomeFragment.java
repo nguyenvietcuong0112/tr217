@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.R;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.TransactionUpdateEvent;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.TransactionAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
@@ -26,6 +27,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,9 +47,16 @@ public class HomeFragment extends Fragment {
     private TransactionAdapter adapter;
     private List<TransactionModel> allTransactionList = new ArrayList<>();
     private List<TransactionModel> filteredTransactionList = new ArrayList<>();
-    private String currentTransactionType = "Expend"; // Mặc định là chi tiêu
-    private String currentMonth = ""; // Tháng hiện tại
+    private String currentTransactionType = "Expend";
+    private String currentMonth = "";
     private Map<String, List<TransactionModel>> transactionsByDate = new HashMap<>();
+    String currentCurrency;
+    ImageView ivEditBalance;
+
+    String totalAmount;
+
+    boolean isBalanceVisible = true;
+
 
     @Nullable
     @Override
@@ -59,10 +68,14 @@ public class HomeFragment extends Fragment {
         setupClickListeners();
         setupInitialFilter();
 
+
         return view;
     }
 
     private void initViews(View view) {
+        currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(getContext());
+        if (currentCurrency.isEmpty()) currentCurrency = "$";
+
         tvTotalBalance = view.findViewById(R.id.tv_total_balance);
         tvSelectedMonth = view.findViewById(R.id.tv_selected_month);
         tvTotalExpenditure = view.findViewById(R.id.tv_total_expenditure);
@@ -70,11 +83,14 @@ public class HomeFragment extends Fragment {
         llIncome = view.findViewById(R.id.ll_income);
         llLoan = view.findViewById(R.id.ll_loan);
         rvTransactions = view.findViewById(R.id.rv_transactions);
+        ivEditBalance = view.findViewById(R.id.iv_edit_balance);
 
         // Thiết lập RecyclerView
         adapter = new TransactionAdapter(filteredTransactionList);
         rvTransactions.setLayoutManager(new LinearLayoutManager(getContext()));
         rvTransactions.setAdapter(adapter);
+
+        tvTotalExpenditure.setText(currentCurrency);
     }
 
     private void loadTransactionData() {
@@ -87,7 +103,8 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        Type type = new TypeToken<List<TransactionModel>>() {}.getType();
+        Type type = new TypeToken<List<TransactionModel>>() {
+        }.getType();
         allTransactionList = new Gson().fromJson(transactionListJson, type);
 
         if (allTransactionList == null) {
@@ -115,13 +132,22 @@ public class HomeFragment extends Fragment {
         });
 
         tvSelectedMonth.setOnClickListener(v -> {
-            // Hiển thị dialog chọn tháng
             showMonthPickerDialog();
+        });
+
+        ivEditBalance.setOnClickListener(view -> {
+            if (isBalanceVisible) {
+                tvTotalBalance.setText("******");
+                ivEditBalance.setImageResource(R.drawable.ic_visibility_off);
+            } else {
+                tvTotalBalance.setText(totalAmount);
+                ivEditBalance.setImageResource(R.drawable.ic_visibility);
+            }
+            isBalanceVisible = !isBalanceVisible;
         });
     }
 
     private void setupInitialFilter() {
-        // Thiết lập tháng hiện tại
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
         Calendar calendar = Calendar.getInstance();
         currentMonth = dateFormat.format(calendar.getTime());
@@ -133,10 +159,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateTransactionTypeUI() {
-        // Cập nhật UI cho loại giao dịch được chọn
-        llExpend.setSelected(currentTransactionType.equals("Expend"));
-        llIncome.setSelected(currentTransactionType.equals("Income"));
-        llLoan.setSelected(currentTransactionType.equals("Loan"));
+        llExpend.setBackgroundResource(currentTransactionType.equals("Expend") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
+        llIncome.setBackgroundResource(currentTransactionType.equals("Income") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
+        llLoan.setBackgroundResource(currentTransactionType.equals("Loan") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
 
         // Cập nhật màu sắc và style cho tab được chọn
         ImageView ivExpend = llExpend.findViewById(R.id.iv_expend);
@@ -149,21 +174,17 @@ public class HomeFragment extends Fragment {
         int colorActive = getResources().getColor(R.color.blue);
         int colorInactive = getResources().getColor(R.color.icon_inactive);
 
-        // Đặt màu và style cho tab Expend
         ivExpend.setColorFilter(currentTransactionType.equals("Expend") ? colorActive : colorInactive);
         tvExpendLabel.setTextColor(currentTransactionType.equals("Expend") ? colorActive : colorInactive);
 
-        // Đặt màu và style cho tab Income
         ivIncome.setColorFilter(currentTransactionType.equals("Income") ? colorActive : colorInactive);
         tvIncomeLabel.setTextColor(currentTransactionType.equals("Income") ? colorActive : colorInactive);
 
-        // Đặt màu và style cho tab Loan
         ivLoan.setColorFilter(currentTransactionType.equals("Loan") ? colorActive : colorInactive);
         tvLoanLabel.setTextColor(currentTransactionType.equals("Loan") ? colorActive : colorInactive);
     }
 
     private void filterTransactions() {
-        // Lọc theo loại giao dịch và tháng
         SimpleDateFormat inputDateFormat = new SimpleDateFormat("MMMM, d yyyy", Locale.US);
         SimpleDateFormat outputDateFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
         SimpleDateFormat alternateInputFormat = new SimpleDateFormat("dd/M/yyyy", Locale.getDefault());
@@ -172,10 +193,9 @@ public class HomeFragment extends Fragment {
         transactionsByDate.clear();
 
         for (TransactionModel transaction : allTransactionList) {
-            System.out.println("transactiontransactiontransaction:" + transaction.getDate());
 
             if (transaction.getDate() == null || transaction.getDate().trim().isEmpty()) {
-                continue; // Skip transactions with empty date
+                continue;
             }
 
             try {
@@ -183,16 +203,13 @@ public class HomeFragment extends Fragment {
                 String dateStr = transaction.getDate();
 
                 try {
-                    // First try to parse with the primary format
                     transactionDate = inputDateFormat.parse(dateStr);
                 } catch (ParseException e) {
-                    // If that fails, try with alternate format
                     try {
                         transactionDate = alternateInputFormat.parse(dateStr);
                     } catch (ParseException e2) {
-                        // Log the error but don't crash
                         System.err.println("Could not parse date: " + dateStr);
-                        continue; // Skip this transaction
+                        continue;
                     }
                 }
 
@@ -203,7 +220,6 @@ public class HomeFragment extends Fragment {
 
                     filteredTransactionList.add(transaction);
 
-                    // Nhóm theo ngày
                     String dayKey = new SimpleDateFormat("EEE, dd MMMM", Locale.US).format(transactionDate);
                     if (!transactionsByDate.containsKey(dayKey)) {
                         transactionsByDate.put(dayKey, new ArrayList<>());
@@ -211,21 +227,20 @@ public class HomeFragment extends Fragment {
                     transactionsByDate.get(dayKey).add(transaction);
                 }
             } catch (Exception e) {
-                // Handle any other potential exception
                 e.printStackTrace();
             }
         }
 
-        // Cập nhật tổng số tiền
         updateTotalAmount();
 
-        // Cập nhật RecyclerView
         adapter.updateData(filteredTransactionList, transactionsByDate);
     }
 
     private void updateTotalAmount() {
         double totalBalance = 0;
         double totalExpenditure = 0;
+        double totalIncome = 0;
+        double totalLoan = 0;
 
         for (TransactionModel transaction : allTransactionList) {
             try {
@@ -235,40 +250,50 @@ public class HomeFragment extends Fragment {
                     totalBalance += amount;
                 } else if (transaction.getTransactionType().equals("Expend")) {
                     totalBalance -= amount;
+                }
+                if (transaction.getDate() != null && !transaction.getDate().trim().isEmpty()) {
+                    try {
+                        Date transactionDate = parseTransactionDate(transaction.getDate());
+                        if (transactionDate != null) {
+                            SimpleDateFormat outputDateFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
+                            String transactionMonth = outputDateFormat.format(transactionDate);
 
-                    // Chỉ tính tổng chi tiêu cho tháng đã chọn
-                    if (transaction.getDate() != null && !transaction.getDate().trim().isEmpty()) {
-                        try {
-                            Date transactionDate = parseTransactionDate(transaction.getDate());
-                            if (transactionDate != null) {
-                                SimpleDateFormat outputDateFormat = new SimpleDateFormat("MMMM yyyy", Locale.US);
-                                String transactionMonth = outputDateFormat.format(transactionDate);
-
-                                if (transactionMonth.equals(currentMonth)) {
-                                    totalExpenditure += amount;
+                            if (transactionMonth.equals(currentMonth)) {
+                                switch (transaction.getTransactionType()) {
+                                    case "Income":
+                                        totalIncome += amount;
+                                        break;
+                                    case "Expend":
+                                        totalExpenditure += amount;
+                                        break;
+                                    case "Loan":
+                                        totalLoan += amount;
+                                        break;
                                 }
                             }
-                        } catch (Exception e) {
-                            // Log the error but continue processing
-                            e.printStackTrace();
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-                // Với Loan, có thể xử lý theo logic riêng nếu cần
             } catch (NumberFormatException e) {
-                // Handle invalid amount format
                 e.printStackTrace();
             }
         }
 
-        // Hiển thị tổng số dư
-        tvTotalBalance.setText(String.format(Locale.US, "$%.2f", totalBalance));
-
-        // Hiển thị tổng chi tiêu nếu tab hiện tại là Expend
-        if (currentTransactionType.equals("Expend")) {
-            tvTotalExpenditure.setText(String.format(Locale.US, "$%.2f", totalExpenditure));
-        } else {
-            tvTotalExpenditure.setText("$0.00");
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+        tvTotalBalance.setText(currentCurrency + formatter.format(totalBalance));
+        totalAmount = currentCurrency + formatter.format(totalBalance);
+        switch (currentTransactionType) {
+            case "Income":
+                tvTotalExpenditure.setText(currentCurrency + formatter.format(totalIncome));
+                break;
+            case "Expend":
+                tvTotalExpenditure.setText(currentCurrency + formatter.format(totalExpenditure));
+                break;
+            case "Loan":
+                tvTotalExpenditure.setText(currentCurrency + formatter.format(totalLoan));
+                break;
         }
     }
 

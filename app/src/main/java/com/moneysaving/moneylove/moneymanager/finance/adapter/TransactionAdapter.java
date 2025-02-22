@@ -9,11 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneysaving.moneylove.moneymanager.finance.R;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,12 +37,11 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if (transactionsByDate != null) {
             this.transactionsByDate = new TreeMap<>(transactionsByDate);
-            // Chuyển đổi map thành danh sách các mục để hiển thị
             for (String date : this.transactionsByDate.keySet()) {
-                // Thêm header ngày
                 items.add(date);
-                // Thêm các giao dịch của ngày đó
-                items.addAll(this.transactionsByDate.get(date));
+                List<TransactionModel> dailyTransactions = new ArrayList<>(this.transactionsByDate.get(date));
+                Collections.sort(dailyTransactions, (t1, t2) -> t2.getTime().compareTo(t1.getTime()));
+                items.addAll(dailyTransactions);
             }
         } else {
             items.addAll(transactionList);
@@ -76,7 +78,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             String date = (String) items.get(position);
             headerHolder.bind(date);
 
-            // Tính tổng số tiền cho ngày này
             double totalAmount = 0;
             if (transactionsByDate.containsKey(date)) {
                 for (TransactionModel transaction : transactionsByDate.get(date)) {
@@ -84,6 +85,12 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 }
             }
             headerHolder.setTotalAmount(totalAmount);
+            if (position != items.size() - 1 && items.get(position + 1) instanceof TransactionModel) {
+                headerHolder.divider.setVisibility(View.VISIBLE);
+            } else {
+                headerHolder.divider.setVisibility(View.GONE);
+            }
+
 
         } else {
             TransactionViewHolder transactionHolder = (TransactionViewHolder) holder;
@@ -100,10 +107,15 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class DateHeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvDate, tvTotalAmount;
 
+        View divider;  // Add this to handle divider visibility
+
+
         DateHeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDate = itemView.findViewById(R.id.tv_date);
             tvTotalAmount = itemView.findViewById(R.id.tv_total_amount);
+            divider = itemView.findViewById(R.id.divider);
+
         }
 
         void bind(String date) {
@@ -111,7 +123,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         void setTotalAmount(double amount) {
-            tvTotalAmount.setText(String.format("$%.2f", amount));
+            String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(itemView.getContext());
+            if (currentCurrency.isEmpty()) currentCurrency = "$";
+            NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+            tvTotalAmount.setText(currentCurrency + formatter.format(amount));
         }
     }
 
@@ -145,8 +160,11 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                     textColor = itemView.getContext().getResources().getColor(R.color.black);
                     break;
             }
+            String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(itemView.getContext());
+            if (currentCurrency.isEmpty()) currentCurrency = "$";
+            NumberFormat formatter = NumberFormat.getInstance(Locale.US);
 
-            String amountText = amountPrefix + "$" + transaction.getAmount();
+            String amountText = amountPrefix + currentCurrency + formatter.format(Double.parseDouble(transaction.getAmount()));
             tvAmount.setText(amountText);
             tvAmount.setTextColor(textColor);
 

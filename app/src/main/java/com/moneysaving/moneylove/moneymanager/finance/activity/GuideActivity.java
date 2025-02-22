@@ -15,25 +15,22 @@ import android.widget.ImageView;
 
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
-import com.mallegan.ads.callback.InterCallback;
 import com.mallegan.ads.callback.NativeCallback;
 import com.mallegan.ads.util.Admob;
 import com.moneysaving.moneylove.moneymanager.finance.R;
-import com.moneysaving.moneylove.moneymanager.finance.Utils.Constant;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SystemConfiguration;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SystemUtil;
-import com.moneysaving.moneylove.moneymanager.finance.adapter.SlideAdapter;
+import com.moneysaving.moneylove.moneymanager.finance.adapter.GuideAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.base.BaseActivity;
-import com.moneysaving.moneylove.moneymanager.finance.databinding.ActivityIntroBinding;
+import com.moneysaving.moneylove.moneymanager.finance.databinding.ActivityGuideBinding;
 
 
-public class IntroActivity extends BaseActivity implements View.OnClickListener {
+public class GuideActivity extends BaseActivity implements View.OnClickListener {
     private ImageView[] dots = null;
-    private ActivityIntroBinding binding;
+    private ActivityGuideBinding binding;
 
     private boolean loadNative1 = true;
     private boolean loadNative2 = true;
@@ -44,24 +41,24 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
     public void bind() {
         SystemUtil.setLocale(this);
         SystemConfiguration.setStatusBarColor(this, R.color.transparent, SystemConfiguration.IconColor.ICON_DARK);
-        binding = ActivityIntroBinding.inflate(getLayoutInflater());
+        binding = ActivityGuideBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         if (SystemUtil.isNetworkConnected(this)) {
             binding.frAds.setVisibility(View.VISIBLE);
         } else binding.frAds.setVisibility(View.GONE);
         dots = new ImageView[]{binding.cricle1, binding.cricle2, binding.cricle3, binding.cricle4};
-        SlideAdapter adapter = new SlideAdapter(this);
+        GuideAdapter adapter = new GuideAdapter(this);
         binding.viewPager2.setAdapter(adapter);
         setUpSlideIntro();
         binding.btnNext.setOnClickListener(this);
-        binding.btnBack.setOnClickListener(this);
         loadNative1();
         loadNativeIntro2();
         loadNative3();
         loadNative4();
-        if (!SharePreferenceUtils.isOrganic(this)) {
-            loadInterIntro();
-        }
+//        if(!SharePreferenceUtils.isOrganic(this)){
+//            loadInterIntro();
+//        }
+        binding.ivBack.setOnClickListener(view -> onBackPressed());
     }
 
     @Override
@@ -78,22 +75,6 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             } else {
                 binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() + 1);
             }
-        } else if (v == binding.btnBack) {
-            if (binding.viewPager2.getCurrentItem() == 3) {
-                binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() - 1);
-            } else if (binding.viewPager2.getCurrentItem() == 2) {
-                binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() - 1);
-            } else if (binding.viewPager2.getCurrentItem() == 1) {
-                binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() - 1);
-            }
-        } else if (v == binding.btnBack) {
-            if (binding.viewPager2.getCurrentItem() == 3) {
-                binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() - 1);
-            } else if (binding.viewPager2.getCurrentItem() == 2) {
-                binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() - 1);
-            } else if (binding.viewPager2.getCurrentItem() == 1) {
-                binding.viewPager2.setCurrentItem(binding.viewPager2.getCurrentItem() - 1);
-            }
         }
     }
 
@@ -104,21 +85,9 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
     public void goToHome() {
         String selectedCurrencyCode = SharePreferenceUtils.getSelectedCurrencyCode(this);
         if (selectedCurrencyCode.isEmpty()) {
-            startActivity(new Intent(IntroActivity.this, CurrencyUnitActivity.class));
+            startActivity(new Intent(GuideActivity.this, CurrencyUnitActivity.class));
         } else {
-            if (Constant.interIntro != null) {
-                Admob.getInstance().showInterAds(IntroActivity.this, Constant.interIntro, new InterCallback() {
-                    @Override
-                    public void onNextAction() {
-                        super.onNextAction();
-                        Intent intent = new Intent(IntroActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                });
-            } else {
-                Intent intent = new Intent(IntroActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+            startActivity(new Intent(GuideActivity.this, MainActivity.class));
 
         }
 
@@ -152,7 +121,7 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void setUpSlideIntro() {
-        SlideAdapter adapter = new SlideAdapter(this);
+        GuideAdapter adapter = new GuideAdapter(this);
         binding.viewPager2.setAdapter(adapter);
 
         binding.viewPager2.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -191,7 +160,6 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             binding.frAds4.setVisibility(View.GONE);
             binding.frAds3.setVisibility(View.GONE);
             binding.frAds2.setVisibility(View.GONE);
-            binding.btnBack.setAlpha(0.5f);
             SystemUtil.setLocale(this);
         } else if (position == 1) {
             if (loadNative2) {
@@ -204,7 +172,6 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             binding.frAds1.setVisibility(View.GONE);
             binding.frAds3.setVisibility(View.GONE);
             binding.frAds4.setVisibility(View.GONE);
-            binding.btnBack.setAlpha(1f);
             SystemUtil.setLocale(this);
         } else if (position == 2) {
             if (loadNative3) {
@@ -219,7 +186,6 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             binding.frAds2.setVisibility(View.GONE);
 
             loadNative3();
-            binding.btnBack.setAlpha(1f);
 
 
             SystemUtil.setLocale(this);
@@ -234,7 +200,6 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             binding.frAds1.setVisibility(View.GONE);
             binding.frAds2.setVisibility(View.GONE);
             binding.frAds3.setVisibility(View.GONE);
-            binding.btnBack.setAlpha(1f);
             SystemUtil.setLocale(this);
         }
         hideNavigationBar();
@@ -283,11 +248,11 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             public void onNativeAdLoaded(NativeAd nativeAd) {
                 super.onNativeAdLoaded(nativeAd);
                 NativeAdView adView;
-                if (SharePreferenceUtils.isOrganic(IntroActivity.this)) {
-                    adView = (NativeAdView) LayoutInflater.from(IntroActivity.this)
+                if (SharePreferenceUtils.isOrganic(GuideActivity.this)) {
+                    adView = (NativeAdView) LayoutInflater.from(GuideActivity.this)
                             .inflate(R.layout.layout_native_language, null);
                 } else {
-                    adView = (NativeAdView) LayoutInflater.from(IntroActivity.this)
+                    adView = (NativeAdView) LayoutInflater.from(GuideActivity.this)
                             .inflate(R.layout.layout_native_language_non_organic, null);
                 }
                 loadNative1 = true;
@@ -312,14 +277,14 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loadNative3() {
-        if (!SharePreferenceUtils.isOrganic(IntroActivity.this)) {
+        if (!SharePreferenceUtils.isOrganic(GuideActivity.this)) {
             checkNextButtonStatus(false);
             Admob.getInstance().loadNativeAd(this, getString(R.string.native_onboarding3), new NativeCallback() {
                 @Override
                 public void onNativeAdLoaded(NativeAd nativeAd) {
                     super.onNativeAdLoaded(nativeAd);
                     runOnUiThread(() -> {
-                        NativeAdView adView = (NativeAdView) LayoutInflater.from(IntroActivity.this).inflate(R.layout.layout_native_introthree_non_organic, null);
+                        NativeAdView adView = (NativeAdView) LayoutInflater.from(GuideActivity.this).inflate(R.layout.layout_native_introthree_non_organic, null);
                         binding.frAds3.removeAllViews();
                         binding.frAds3.addView(adView);
                         loadNative3 = true;
@@ -350,7 +315,7 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void loadNativeIntro2() {
-        if (!SharePreferenceUtils.isOrganic(IntroActivity.this)) {
+        if (!SharePreferenceUtils.isOrganic(GuideActivity.this)) {
             checkNextButtonStatus(false);
             Admob.getInstance().loadNativeAd(this, getString(R.string.native_onboarding2), new NativeCallback() {
                 @Override
@@ -370,7 +335,7 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
                 public void onNativeAdLoaded(NativeAd nativeAd) {
                     super.onNativeAdLoaded(nativeAd);
                     runOnUiThread(() -> {
-                        NativeAdView adView = (NativeAdView) LayoutInflater.from(IntroActivity.this).inflate(R.layout.layout_native_introtwo_non_organic, null);
+                        NativeAdView adView = (NativeAdView) LayoutInflater.from(GuideActivity.this).inflate(R.layout.layout_native_introtwo_non_organic, null);
                         binding.frAds2.removeAllViews();
                         binding.frAds2.addView(adView);
                         loadNative2 = true;
@@ -409,11 +374,11 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
             public void onNativeAdLoaded(NativeAd nativeAd) {
                 super.onNativeAdLoaded(nativeAd);
                 NativeAdView adView;
-                if (SharePreferenceUtils.isOrganic(IntroActivity.this)) {
-                    adView = (NativeAdView) LayoutInflater.from(IntroActivity.this)
+                if (SharePreferenceUtils.isOrganic(GuideActivity.this)) {
+                    adView = (NativeAdView) LayoutInflater.from(GuideActivity.this)
                             .inflate(R.layout.layout_native_language, null);
                 } else {
-                    adView = (NativeAdView) LayoutInflater.from(IntroActivity.this)
+                    adView = (NativeAdView) LayoutInflater.from(GuideActivity.this)
                             .inflate(R.layout.layout_native_language_non_organic, null);
                 }
                 runOnUiThread(() -> {
@@ -430,15 +395,15 @@ public class IntroActivity extends BaseActivity implements View.OnClickListener 
 
     }
 
-    private void loadInterIntro() {
-        Admob.getInstance().loadInterAds(this, getString(R.string.inter_intro), new InterCallback() {
-            @Override
-            public void onInterstitialLoad(InterstitialAd interstitialAd) {
-                super.onInterstitialLoad(interstitialAd);
-                Constant.interIntro = interstitialAd;
-            }
-        });
-    }
+//    private void loadInterIntro() {
+//        Admob.getInstance().loadInterAds(this, getString(R.string.inter_intro), new InterCallback() {
+//            @Override
+//            public void onInterstitialLoad(InterstitialAd interstitialAd) {
+//                super.onInterstitialLoad(interstitialAd);
+//                Constant.interIntro = interstitialAd;
+//            }
+//        });
+//    }
 
     @Override
     public void onBackPressed() {

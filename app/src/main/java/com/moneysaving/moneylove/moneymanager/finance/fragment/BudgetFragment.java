@@ -1,6 +1,7 @@
 package com.moneysaving.moneylove.moneymanager.finance.fragment;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -38,7 +39,7 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     private TextView tvTotalBudget, tvExpenses;
     private ImageView ivEditBudget;
     //    private RecyclerView rvBudgets;
-    private Button btnBudgetDetail;
+    private ImageView btnBudgetDetail;
     private List<TransactionModel> allTransactionList;
 
     @Override

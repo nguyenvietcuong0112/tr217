@@ -1,5 +1,6 @@
 package com.moneysaving.moneylove.moneymanager.finance.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.R;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.TransactionUpdateEvent;
 import org.greenrobot.eventbus.EventBus;
@@ -29,21 +31,23 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class StatisticsFragment extends Fragment {
     private TextView tvTotalBalance, tvSelectedMonth;
-    private LinearLayout llExpend, llIncome, llLoan;
+    private LinearLayout llExpend, llIncome, llLoan,llSelectedMmonth;
     private LinearLayout llCategoryList;
-//    private ImageView ivChart, ivHistory;
     private BarChart barChart;
 
     private List<TransactionModel> allTransactionList = new ArrayList<>();
     private String currentTransactionType = "Expend";
     private String currentMonth;
     private Map<String, Double> categoryTotals = new HashMap<>();
+    String currentCurrency;
+
 
     @Nullable
     @Override
@@ -57,16 +61,18 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(getContext());
+        if (currentCurrency.isEmpty()) currentCurrency = "$";
+
         tvTotalBalance = view.findViewById(R.id.tv_total_balance);
         tvSelectedMonth = view.findViewById(R.id.tv_selected_month);
+        llSelectedMmonth = view.findViewById(R.id.ll_selected_month);
         llExpend = view.findViewById(R.id.ll_expend);
         llIncome = view.findViewById(R.id.ll_income);
         llLoan = view.findViewById(R.id.ll_loan);
         llCategoryList = view.findViewById(R.id.ll_category_list);
         barChart = view.findViewById(R.id.bar_chart);
 
-//        ivChart = view.findViewById(R.id.iv_chart);
-//        ivHistory = view.findViewById(R.id.iv_history);
     }
 
     private void loadTransactionData() {
@@ -101,7 +107,7 @@ public class StatisticsFragment extends Fragment {
             updateStatistics();
         });
 
-        tvSelectedMonth.setOnClickListener(v -> showMonthPickerDialog());
+        llSelectedMmonth.setOnClickListener(v -> showMonthPickerDialog());
     }
 
     private void setupInitialFilter() {
@@ -114,18 +120,29 @@ public class StatisticsFragment extends Fragment {
 
     private void updateTransactionTypeUI() {
         // Đặt lại trạng thái của tất cả các loại giao dịch
-        llExpend.setBackgroundResource(R.drawable.bg_ads_intro1);
-        llIncome.setBackgroundResource(R.drawable.bg_ads_intro1);
-        llLoan.setBackgroundResource(R.drawable.bg_ads_intro1);
+        llExpend.setBackgroundResource(currentTransactionType.equals("Expend") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
+        llIncome.setBackgroundResource(currentTransactionType.equals("Income") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
+        llLoan.setBackgroundResource(currentTransactionType.equals("Loan") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
 
-        // Cập nhật UI theo loại giao dịch đang chọn
-        if (currentTransactionType.equals("Expend")) {
-            llExpend.setBackgroundResource(R.drawable.bg_ads_intro1);
-        } else if (currentTransactionType.equals("Income")) {
-            llIncome.setBackgroundResource(R.drawable.bg_ads_intro1);
-        } else if (currentTransactionType.equals("Loan")) {
-            llLoan.setBackgroundResource(R.drawable.bg_ads_intro1);
-        }
+        // Cập nhật màu sắc và style cho tab được chọn
+        ImageView ivExpend = llExpend.findViewById(R.id.iv_expend);
+        TextView tvExpendLabel = llExpend.findViewById(R.id.tv_expend_label);
+        ImageView ivIncome = llIncome.findViewById(R.id.iv_income);
+        TextView tvIncomeLabel = llIncome.findViewById(R.id.tv_income_label);
+        ImageView ivLoan = llLoan.findViewById(R.id.iv_loan);
+        TextView tvLoanLabel = llLoan.findViewById(R.id.tv_loan_label);
+
+        int colorActive = getResources().getColor(R.color.blue);
+        int colorInactive = getResources().getColor(R.color.icon_inactive);
+
+        ivExpend.setColorFilter(currentTransactionType.equals("Expend") ? colorActive : colorInactive);
+        tvExpendLabel.setTextColor(currentTransactionType.equals("Expend") ? colorActive : colorInactive);
+
+        ivIncome.setColorFilter(currentTransactionType.equals("Income") ? colorActive : colorInactive);
+        tvIncomeLabel.setTextColor(currentTransactionType.equals("Income") ? colorActive : colorInactive);
+
+        ivLoan.setColorFilter(currentTransactionType.equals("Loan") ? colorActive : colorInactive);
+        tvLoanLabel.setTextColor(currentTransactionType.equals("Loan") ? colorActive : colorInactive);
     }
 
     private void updateStatistics() {
@@ -144,8 +161,8 @@ public class StatisticsFragment extends Fragment {
             totalAmount += amount;
         }
 
-        // Update total balance display
-        tvTotalBalance.setText(String.format(Locale.US, "$%.2f", totalAmount));
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+        tvTotalBalance.setText(currentCurrency + formatter.format(totalAmount));
 
         // Update category list
         updateCategoryList();
@@ -172,11 +189,9 @@ public class StatisticsFragment extends Fragment {
     private void updateCategoryList() {
         llCategoryList.removeAllViews();
 
-        // Sort categories by amount
-        List<Map.Entry<String, Double>> sortedCategories = new ArrayList<>(categoryTotals.entrySet());
+         List<Map.Entry<String, Double>> sortedCategories = new ArrayList<>(categoryTotals.entrySet());
         sortedCategories.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
 
-        // Add category items to the list
         for (Map.Entry<String, Double> entry : sortedCategories) {
             View categoryItem = LayoutInflater.from(getContext())
                     .inflate(R.layout.item_statistics_category, llCategoryList, false);
@@ -204,13 +219,23 @@ public class StatisticsFragment extends Fragment {
             index++;
         }
 
-        BarDataSet dataSet = new BarDataSet(entries, "Categories");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setColors(
+                Color.parseColor("#FF86EC"),
+                Color.parseColor("#9E86FF"),
+                Color.parseColor("#FFB986"),
+                Color.parseColor("#86DBFF"),
+                Color.parseColor("#6EADFF"),
+                Color.parseColor("#79F2C0"),
+                Color.parseColor("#2FE3FF"),
+                Color.parseColor("#FFD84C"));
         dataSet.setValueTextSize(12f);
 
         BarData barData = new BarData(dataSet);
         barChart.setData(barData);
         barChart.getDescription().setEnabled(false);
+        barChart.setScaleEnabled(false);
+        barData.setBarWidth(0.5f);
 
         XAxis xAxis = barChart.getXAxis();
         xAxis.setGranularity(1f);

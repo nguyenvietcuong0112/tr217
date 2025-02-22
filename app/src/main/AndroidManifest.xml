@@ -25,21 +25,41 @@
 
         </activity>
 
+        <activity
+            android:name=".activity.GuideActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.InterestActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:screenOrientation="portrait" />
+
+
+        <activity
+            android:name=".activity.CurrencyUnitActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:screenOrientation="portrait" />
+
 
         <activity
             android:name=".activity.AddTransactionActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.BudgetDetailActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.IntroActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MainActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.LanguageActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
             android:screenOrientation="portrait" />
 
 
