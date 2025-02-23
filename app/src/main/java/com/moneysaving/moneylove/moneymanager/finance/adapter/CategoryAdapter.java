@@ -48,12 +48,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 R.drawable.bg_category_selected : R.drawable.bg_category_normal);
 
         holder.itemView.setOnClickListener(v -> {
-            int previousSelected = selectedPosition;
             selectedPosition = position;
-            notifyItemChanged(previousSelected);
-            notifyItemChanged(selectedPosition);
+            notifyDataSetChanged(); // Cập nhật lại toàn bộ danh sách để background hiển thị đúng
             listener.onCategoryClick(item, position);
         });
+
     }
 
     @Override

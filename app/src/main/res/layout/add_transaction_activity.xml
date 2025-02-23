@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:padding="16dp">
 
-    <!-- Header -->
+    <!-- Phần trên (Cancel, Title, Save) -->
     <TextView
         android:id="@+id/tv_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cancel"
-        android:textColor="@color/gray"
+        android:textColor="#49566A"
         android:textSize="16sp"
+        android:fontFamily="@font/roboto_medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,6 +25,8 @@
         android:text="Add"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
+        android:fontFamily="@font/roboto_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,192 +38,327 @@
         android:text="Save"
         android:textColor="@color/blue"
         android:textSize="16sp"
+        android:fontFamily="@font/roboto_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Transaction Type -->
-    <RadioGroup
-        android:id="@+id/rg_transaction_type"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_title">
-
-        <RadioButton
-            android:id="@+id/rb_expend"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="Expend" />
-
-        <RadioButton
-            android:id="@+id/rb_income"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Income" />
-
-        <RadioButton
-            android:id="@+id/rb_loan"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Loan" />
-    </RadioGroup>
-
-    <!-- Amount -->
-    <TextView
-        android:id="@+id/tv_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Amount"
-        android:layout_marginTop="16dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/rg_transaction_type"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/et_amount"
+    <!-- ScrollView bắt đầu từ ll_transaction_tabs -->
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="0"
-        android:inputType="numberDecimal"
-        android:textSize="20sp"
-        android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_amount"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_currency" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Currency -->
-    <TextView
-        android:id="@+id/tv_currency"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="USD"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/et_amount"
-        app:layout_constraintBottom_toBottomOf="@id/et_amount" />
-
-    <!-- Category -->
-    <TextView
-        android:id="@+id/tv_category"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Category"
-        android:layout_marginTop="16dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/et_amount"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_categories"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_category"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Lender (hiển thị khi chọn Loan) -->
-    <LinearLayout
-        android:id="@+id/layout_lender"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/rv_categories"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/tv_lender"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lender"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/et_lender"
+        <!-- LinearLayout hoặc ConstraintLayout làm container cho ScrollView -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Add a description"
-            android:padding="12dp" />
-    </LinearLayout>
+            android:layout_height="wrap_content">
 
-    <!-- Budget (hiển thị khi chọn Expend) -->
-    <LinearLayout
-        android:id="@+id/layout_budget"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/layout_lender"
-        app:layout_constraintStart_toStartOf="parent">
+            <!-- Phần ll_transaction_tabs và các phần tử bên dưới -->
+            <LinearLayout
+                android:id="@+id/ll_transaction_tabs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_budget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Budget"
-            android:textStyle="bold" />
+                <!-- Các tab (Expend, Income, Loan) -->
+                <LinearLayout
+                    android:id="@+id/ll_expend"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_tab_item_false"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
-        <Spinner
-            android:id="@+id/sp_budget"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp" />
-    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iv_expend"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_expense" />
 
-    <!-- Note -->
-    <TextView
-        android:id="@+id/tv_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Note"
-        android:layout_marginTop="16dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/layout_budget"
-        app:layout_constraintStart_toStartOf="parent" />
+                    <TextView
+                        android:id="@+id/tv_expend_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/roboto_medium"
+                        android:text="Expend"
+                        android:textColor="@color/blue"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Add a description"
-        android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_note"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+                <LinearLayout
+                    android:id="@+id/ll_income"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_tab_item_false"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
-    <!-- Date & Time -->
-    <TextView
-        android:id="@+id/tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date time"
-        android:layout_marginTop="16dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/et_note"
-        app:layout_constraintStart_toStartOf="parent" />
+                    <ImageView
+                        android:id="@+id/iv_income"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_income" />
 
-    <Button
-        android:id="@+id/btn_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintTop_toBottomOf="@id/tv_date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_time" />
+                    <TextView
+                        android:id="@+id/tv_income_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/roboto_medium"
+                        android:text="Income"
+                        android:textColor="@color/icon_inactive"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintTop_toBottomOf="@id/tv_date"
-        app:layout_constraintEnd_toEndOf="parent" />
+                <LinearLayout
+                    android:id="@+id/ll_loan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_tab_item_false"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
 
+                    <ImageView
+                        android:id="@+id/iv_loan"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_loan_tab" />
+
+                    <TextView
+                        android:id="@+id/tv_loan_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/roboto_medium"
+                        android:text="Loan"
+                        android:textColor="@color/icon_inactive"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Các phần tử bên dưới ll_transaction_tabs -->
+            <TextView
+                android:id="@+id/tv_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Amount"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto_regular"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/ll_transaction_tabs"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/et_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_white"
+                android:fontFamily="@font/roboto_regular"
+                android:hint="0"
+                android:textColorHint="@color/grey"
+                android:inputType="numberDecimal"
+                android:textSize="@dimen/_14sdp"
+                android:textColor="@color/black"
+                android:padding="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_amount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_currency" />
+
+
+
+            <TextView
+                android:id="@+id/tv_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="USD"
+                android:textColor="@color/grey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/et_amount"
+                app:layout_constraintBottom_toBottomOf="@id/et_amount" />
+
+            <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto_regular"
+                app:layout_constraintTop_toBottomOf="@id/et_amount"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:background="@drawable/bg_white"
+                app:layout_constraintTop_toBottomOf="@id/tv_category"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <LinearLayout
+                android:id="@+id/layout_lender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/rv_categories"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_lender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lender"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_lender"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_white"
+                    android:textColorHint="@color/grey"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/roboto_regular"
+                    android:hint="Add a description"
+                    android:padding="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_budget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@id/layout_lender"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_budget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Budget"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/sp_budget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_white"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Note"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto_regular"
+                app:layout_constraintTop_toBottomOf="@id/layout_budget"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/et_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Add a description"
+                android:textColorHint="@color/grey"
+                android:padding="12dp"
+                android:background="@drawable/bg_white"
+                android:paddingVertical="@dimen/_10sdp"
+                android:paddingHorizontal="8dp"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/tv_note"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_date_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date time"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:fontFamily="@font/roboto_regular"
+                app:layout_constraintTop_toBottomOf="@id/et_note"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/btn_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_white"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_date_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_time">
+
+                <TextView
+                    android:id="@id/tv_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select date"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btn_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_white"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_date_title"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@id/tv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select time"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

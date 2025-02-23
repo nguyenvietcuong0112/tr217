@@ -1,4 +1,5 @@
 package com.moneysaving.moneylove.moneymanager.finance.activity;
+
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,15 +41,20 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     private SharePreferenceUtils sharePreferenceUtils;
 
-    private TextView tvCancel, tvSave,tvCurrency;
-    private RadioGroup rgTransactionType;
-    private RadioButton rbExpend, rbIncome, rbLoan;
+    private TextView tvCancel, tvSave, tvCurrency;
+    private LinearLayout rgTransactionType;
+    private LinearLayout rbExpend, rbIncome, rbLoan;
     private EditText etAmount, etNote, etLender;
     private Spinner spBudget;
-    private Button btnDate, btnTime;
+    private LinearLayout btnDate, btnTime;
+    private TextView tv_date, tvTime;
+
     private RecyclerView rvCategories;
     private LinearLayout layoutLender, layoutBudget;
-
+    private String currentTransactionType = "Expend"; // Mặc định là Expend
+    private int colorActive, colorInactive;
+    private ImageView ivExpend, ivIncome, ivLoan;
+    private TextView tvExpendLabel, tvIncomeLabel, tvLoanLabel;
 
     private String transactionType = "Expend";
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -73,35 +80,29 @@ public class AddTransactionActivity extends AppCompatActivity {
 
         initViews();
         initCategories();
-        // Thiết lập sự kiện
         setupListeners();
         initBudget();
-        // Thiết lập ngày giờ mặc định
         selectedDate = dateFormat.format(new Date());
         selectedTime = timeFormat.format(new Date());
 
-        btnDate.setText(selectedDate);
-        btnTime.setText(selectedTime);
+        tv_date.setText(selectedDate);
+        tvTime.setText(selectedTime);
 
-        // Mặc định hiển thị Expend
         selectTransactionType("Expend");
 
-
-        // Tải dữ liệu trước đó nếu có
         loadPreviousData();
     }
 
-    private  void initBudget() {
+    private void initBudget() {
         BudgetManager budgetManager = new BudgetManager(this);
         List<BudgetItem> budgetItems = budgetManager.getBudgetItems();
         List<String> budgetNames = new ArrayList<>();
-        budgetNames.add("None"); // Thêm "None" mặc định
+        budgetNames.add("None");
         for (BudgetItem item : budgetItems) {
-            budgetNames.add(item.getName()); // Lấy tên của từng ngân sách
+            budgetNames.add(item.getName());
         }
 
-        // Thiết lập adapter cho Spinner Budget
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, budgetNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, budgetNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spBudget.setAdapter(adapter);
     }
@@ -109,10 +110,10 @@ public class AddTransactionActivity extends AppCompatActivity {
     private void initViews() {
         tvCancel = findViewById(R.id.tv_cancel);
         tvSave = findViewById(R.id.tv_save);
-        rgTransactionType = findViewById(R.id.rg_transaction_type);
-        rbExpend = findViewById(R.id.rb_expend);
-        rbIncome = findViewById(R.id.rb_income);
-        rbLoan = findViewById(R.id.rb_loan);
+        rgTransactionType = findViewById(R.id.ll_transaction_tabs);
+        rbExpend = findViewById(R.id.ll_expend);
+        rbIncome = findViewById(R.id.ll_income);
+        rbLoan = findViewById(R.id.ll_loan);
         etAmount = findViewById(R.id.et_amount);
         etNote = findViewById(R.id.et_note);
         etLender = findViewById(R.id.et_lender);
@@ -120,49 +121,95 @@ public class AddTransactionActivity extends AppCompatActivity {
         tvCurrency = findViewById(R.id.tv_currency);
         btnDate = findViewById(R.id.btn_date);
         btnTime = findViewById(R.id.btn_time);
+        tv_date = findViewById(R.id.tv_date);
+        tvTime = findViewById(R.id.tv_time);
         rvCategories = findViewById(R.id.rv_categories);
         layoutLender = findViewById(R.id.layout_lender);
         layoutBudget = findViewById(R.id.layout_budget);
+
+        ivExpend = rbExpend.findViewById(R.id.iv_expend);
+        tvExpendLabel = rbExpend.findViewById(R.id.tv_expend_label);
+        ivIncome = rbIncome.findViewById(R.id.iv_income);
+        tvIncomeLabel = rbIncome.findViewById(R.id.tv_income_label);
+        ivLoan = rbLoan.findViewById(R.id.iv_loan);
+        tvLoanLabel = rbLoan.findViewById(R.id.tv_loan_label);
+
+        colorActive = getResources().getColor(R.color.blue);
+        colorInactive = getResources().getColor(R.color.icon_inactive);
+        rbExpend.setBackgroundResource(R.drawable.bg_tab_item_true);
+        rbIncome.setBackgroundResource(R.drawable.bg_tab_item_false);
+        rbLoan.setBackgroundResource(R.drawable.bg_tab_item_false);
+
+        updateTabColors("Expend");
+
 
         String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
         if (currentCurrency.isEmpty()) currentCurrency = "VND";
         tvCurrency.setText(currentCurrency);
     }
 
+    private void updateTabSelection(LinearLayout selectedTab) {
+        rbExpend.setSelected(false);
+        rbIncome.setSelected(false);
+        rbLoan.setSelected(false);
+
+        selectedTab.setSelected(true);
+    }
+
+    private void updateTabColors(String selectedType) {
+        currentTransactionType = selectedType;
+
+        // Update màu cho Expend
+        ivExpend.setColorFilter(selectedType.equals("Expend") ? colorActive : colorInactive);
+        tvExpendLabel.setTextColor(selectedType.equals("Expend") ? colorActive : colorInactive);
+
+        // Update màu cho Income
+        ivIncome.setColorFilter(selectedType.equals("Income") ? colorActive : colorInactive);
+        tvIncomeLabel.setTextColor(selectedType.equals("Income") ? colorActive : colorInactive);
+
+        // Update màu cho Loan
+        ivLoan.setColorFilter(selectedType.equals("Loan") ? colorActive : colorInactive);
+        tvLoanLabel.setTextColor(selectedType.equals("Loan") ? colorActive : colorInactive);
+    }
+
     private void setupListeners() {
         tvCancel.setOnClickListener(view -> onBackPressed());
         tvSave.setOnClickListener(view -> saveTransactionData());
 
-        // Lắng nghe sự kiện thay đổi loại giao dịch
-        rgTransactionType.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rb_expend) {
-                selectTransactionType("Expend");
-            } else if (checkedId == R.id.rb_income) {
-                selectTransactionType("Income");
-            } else if (checkedId == R.id.rb_loan) {
-                selectTransactionType("Loan");
-            }
+        rbExpend.setOnClickListener(v -> {
+            rbExpend.setBackgroundResource(R.drawable.bg_tab_item_true);
+            rbIncome.setBackgroundResource(R.drawable.bg_tab_item_false);
+            rbLoan.setBackgroundResource(R.drawable.bg_tab_item_false);
+            updateTabColors("Expend");
+            updateTabSelection(rbExpend);
+            selectTransactionType("Expend");
         });
 
-//        // Lắng nghe sự kiện chọn Spinner Budget
-//        spBudget.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                // Xử lý khi chọn budget
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
+        rbIncome.setOnClickListener(v -> {
+            rbExpend.setBackgroundResource(R.drawable.bg_tab_item_false);
+            rbIncome.setBackgroundResource(R.drawable.bg_tab_item_true);
+            rbLoan.setBackgroundResource(R.drawable.bg_tab_item_false);
+            updateTabColors("Income");
+            updateTabSelection(rbIncome);
+            selectTransactionType("Income");
+        });
 
-        // Thiết lập DatePicker
+        rbLoan.setOnClickListener(v -> {
+            rbExpend.setBackgroundResource(R.drawable.bg_tab_item_false);
+            rbIncome.setBackgroundResource(R.drawable.bg_tab_item_false);
+            rbLoan.setBackgroundResource(R.drawable.bg_tab_item_true);
+            updateTabColors("Loan");
+
+            updateTabSelection(rbLoan);
+            selectTransactionType("Loan");
+        });
+
         btnDate.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                     (view, year, month, dayOfMonth) -> {
                         selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-                        btnDate.setText(selectedDate);
+                        tv_date.setText(selectedDate);
                     },
                     calendar.get(Calendar.YEAR),
                     calendar.get(Calendar.MONTH),
@@ -176,7 +223,7 @@ public class AddTransactionActivity extends AppCompatActivity {
             TimePickerDialog timePickerDialog = new TimePickerDialog(this,
                     (view, hourOfDay, minute) -> {
                         selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
-                        btnTime.setText(selectedTime);
+                        tvTime.setText(selectedTime);
                     },
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),
@@ -299,6 +346,10 @@ public class AddTransactionActivity extends AppCompatActivity {
         // Lưu giao dịch
         sharePreferenceUtils.saveTransaction(transaction);
 
+        if ("Expend".equals(transactionType) && !"None".equals(budget)) {
+            BudgetManager budgetManager = new BudgetManager(this);
+            budgetManager.updateBudgetExpenses(budget); // Gọi hàm updateBudgetExpenses
+        }
         // Chuyển dữ liệu về màn hình trước
         Gson gson = new Gson();
         String transactionJson = gson.toJson(transaction);
@@ -323,22 +374,24 @@ public class AddTransactionActivity extends AppCompatActivity {
             // Thiết lập loại giao dịch
             switch (transaction.getTransactionType()) {
                 case "Expend":
-                    rbExpend.setChecked(true);
+                    updateTabSelection(rbExpend);
+                    updateTabColors("Expend");
                     selectTransactionType("Expend");
                     break;
                 case "Income":
-                    rbIncome.setChecked(true);
+                    updateTabSelection(rbIncome);
+                    updateTabColors("Income");
                     selectTransactionType("Income");
                     break;
                 case "Loan":
-                    rbLoan.setChecked(true);
+                    updateTabSelection(rbLoan);
+                    updateTabColors("Loan");
                     selectTransactionType("Loan");
                     if (transaction.getLender() != null) {
                         etLender.setText(transaction.getLender());
                     }
                     break;
             }
-
 
             // Thiết lập spinner budget nếu là Expend
             if ("Expend".equals(transaction.getTransactionType())) {
@@ -348,12 +401,12 @@ public class AddTransactionActivity extends AppCompatActivity {
             // Thiết lập ngày và giờ
             if (transaction.getDate() != null) {
                 selectedDate = transaction.getDate();
-                btnDate.setText(selectedDate);
+                tv_date.setText(selectedDate);
             }
 
             if (transaction.getTime() != null) {
                 selectedTime = transaction.getTime();
-                btnTime.setText(selectedTime);
+                tvTime.setText(selectedTime);
             }
         }
     }

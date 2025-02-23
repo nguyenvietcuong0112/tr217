@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
+import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -15,12 +16,14 @@ public class BudgetManager {
     private static final String KEY_BUDGETS = "budgets";
     private static final String KEY_TOTAL_BUDGET = "total_budget";
     private static final String KEY_TOTAL_EXPENSES = "total_expenses";
+    private SharePreferenceUtils sharePreferenceUtils;
 
     private SharedPreferences prefs;
     private Gson gson;
 
     public BudgetManager(Context context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        this.sharePreferenceUtils = new SharePreferenceUtils(context);
         gson = new Gson();
     }
 
@@ -74,5 +77,43 @@ public class BudgetManager {
             }
         }
         saveBudgetItems(budgets);
+    }
+
+    public double getExpensesForBudget(String budgetName) {
+        List<TransactionModel> transactions = sharePreferenceUtils.getTransactionList();
+        double totalExpenses = 0.0;
+        for (TransactionModel transaction : transactions) {
+            if ("Expend".equals(transaction.getTransactionType()) && budgetName.equals(transaction.getBudget())) {
+                totalExpenses += Double.parseDouble(transaction.getAmount());
+            }
+        }
+        return totalExpenses;
+    }
+
+
+    // Phương thức cập nhật chi phí của một budget
+    public void updateBudgetExpenses(String budgetName) {
+        // Lấy danh sách các giao dịch từ SharePreferenceUtils
+        List<TransactionModel> transactions = sharePreferenceUtils.getTransactionList();
+
+        // Tính toán tổng chi tiêu cho budget cụ thể
+        double totalExpenses = 0.0;
+        for (TransactionModel transaction : transactions) {
+            if ("Expend".equals(transaction.getTransactionType()) && budgetName.equals(transaction.getBudget())) {
+                totalExpenses += Double.parseDouble(transaction.getAmount());
+            }
+        }
+
+        // Cập nhật spentAmount của budget tương ứng
+        List<BudgetItem> budgetItems = getBudgetItems();
+        for (BudgetItem item : budgetItems) {
+            if (budgetName.equals(item.getName())) {
+                item.setSpentAmount(totalExpenses); // Cập nhật spentAmount
+                break;
+            }
+        }
+
+        // Lưu lại danh sách budget đã cập nhật
+        saveBudgetItems(budgetItems);
     }
 }

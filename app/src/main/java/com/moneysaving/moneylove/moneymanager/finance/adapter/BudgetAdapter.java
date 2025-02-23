@@ -10,7 +10,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneysaving.moneylove.moneymanager.finance.R;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressViewDetail;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
 
 import java.util.List;
@@ -19,15 +21,19 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     private Context context;
     private List<BudgetItem> budgets;
     private BudgetItemListener listener;
+    private BudgetManager budgetManager;
+
 
     public interface BudgetItemListener {
         void onBudgetItemClick(BudgetItem item);
     }
 
-    public BudgetAdapter(Context context, List<BudgetItem> budgets, BudgetItemListener listener) {
+    public BudgetAdapter(Context context, List<BudgetItem> budgets, BudgetItemListener listener,BudgetManager budgetManager) {
         this.context = context;
         this.budgets = budgets;
         this.listener = listener;
+        this.budgetManager = budgetManager;
+
     }
 
     public void updateBudgets(List<BudgetItem> newBudgets) {
@@ -46,11 +52,16 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         BudgetItem item = budgets.get(position);
 
         holder.tvName.setText(item.getName());
-        holder.tvAmount.setText(String.format("$%.2f / $%.2f",
-                item.getSpentAmount(), item.getTotalAmount()));
+        holder.tvAmount.setText(String.format("$%.2f", item.getTotalAmount()));
 
-        holder.progressView.setProgress((int) item.getProgress());
+        // Sử dụng BudgetManager để lấy chi tiêu của budget
+        double expenses = budgetManager.getExpensesForBudget(item.getName());
+        double remaining = item.getTotalAmount() - expenses;
+        int progress = item.getTotalAmount() > 0 ? (int) ((remaining / item.getTotalAmount()) * 100) : 0;
+
+        holder.progressView.setProgress(progress);
         holder.progressView.setProgressColor(item.getColor());
+        holder.progressView.setShowRemainingText(false);
 
         holder.itemView.setOnClickListener(v -> listener.onBudgetItemClick(item));
     }
@@ -62,7 +73,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
 
     static class BudgetViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvAmount;
-        CircularProgressView progressView;
+        CircularProgressViewDetail progressView;
 
         BudgetViewHolder(View itemView) {
             super(itemView);

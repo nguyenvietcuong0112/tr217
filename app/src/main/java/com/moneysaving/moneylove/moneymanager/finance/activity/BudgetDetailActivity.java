@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,18 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
-import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetDetailActivity extends AppCompatActivity {
@@ -32,8 +26,8 @@ public class BudgetDetailActivity extends AppCompatActivity {
     private RecyclerView rvBudgets;
     private BudgetManager budgetManager;
     private BudgetAdapter budgetAdapter;
-    private ImageView btnAddBudget;
-    private List<TransactionModel> allTransactionList;
+    private LinearLayout btnAddBudget;
+    ImageView iv_back;
 
 
     @Override
@@ -41,17 +35,17 @@ public class BudgetDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_detail);
 
-        // Khởi tạo View
         mainProgressView = findViewById(R.id.main_progress_view);
         tvTotalBudget = findViewById(R.id.tv_total_budget);
         tvExpenses = findViewById(R.id.tv_expenses);
         tvRemaining = findViewById(R.id.tv_remaining);
         rvBudgets = findViewById(R.id.rv_budgets);
+        iv_back = findViewById(R.id.iv_back);
         btnAddBudget = findViewById(R.id.btn_add_budget);
         btnAddBudget.setOnClickListener(v -> showAddBudgetDialog());
+        iv_back.setOnClickListener(v -> onBackPressed());
 
 
-        // Khởi tạo dữ liệu ngân sách
         budgetManager = new BudgetManager(this);
         setupRecyclerView();
         updateUI();
@@ -59,7 +53,10 @@ public class BudgetDetailActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         List<BudgetItem> budgetItems = budgetManager.getBudgetItems();
-        budgetAdapter = new BudgetAdapter(this, budgetItems, item -> {});
+        budgetAdapter = new BudgetAdapter(this, budgetItems, item -> {
+            showBudgetDetailDialog(item);
+
+        },budgetManager);
         rvBudgets.setLayoutManager(new GridLayoutManager(this, 2));
         rvBudgets.setAdapter(budgetAdapter);
     }
@@ -69,12 +66,16 @@ public class BudgetDetailActivity extends AppCompatActivity {
         double totalExpenses = budgetManager.getTotalExpenses();
         double remaining = totalBudget - totalExpenses;
 
-        tvTotalBudget.setText(String.format("$%,.0f", totalBudget));
-        tvExpenses.setText(String.format("$%,.0f", totalExpenses));
-        tvRemaining.setText(String.format("$%,.0f", remaining));
+        tvTotalBudget.setText("Budget: " + String.format("$%,.0f", totalBudget));
+        tvExpenses.setText("Expenses: " + String.format("$%,.0f", totalExpenses));
+        tvRemaining.setText("Remain: " + String.format("$%,.0f", remaining));
 
         int progress = totalBudget > 0 ? (int) ((remaining / totalBudget) * 100) : 0;
         mainProgressView.setProgress(progress);
+        mainProgressView.setShowRemainingText(true);
+
+        budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
+
     }
 
     private void showAddBudgetDialog() {
@@ -106,40 +107,32 @@ public class BudgetDetailActivity extends AppCompatActivity {
         builder.show();
     }
 
+    private void showBudgetDetailDialog(BudgetItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(item.getName());
 
-//    private void loadTransactionData() {
-//        if (getArguments() == null || !getArguments().containsKey("transactionList")) {
-//            return;
-//        }
-//
-//        String transactionListJson = getArguments().getString("transactionList");
-//        if (transactionListJson == null || transactionListJson.isEmpty()) {
-//            return;
-//        }
-//
-//        Type type = new TypeToken<List<TransactionModel>>() {}.getType();
-//        allTransactionList = new Gson().fromJson(transactionListJson, type);
-//
-//        if (allTransactionList == null) {
-//            allTransactionList = new ArrayList<>();
-//        }
-//
-//        calculateAndUpdateTotalExpenses();
-//    }
-//
-//    private void calculateAndUpdateTotalExpenses() {
-//        if (allTransactionList == null || allTransactionList.isEmpty()) {
-//            return;
-//        }
-//
-//        double totalExpenseAmountBudget = 0.0;
-//        for (TransactionModel transaction : allTransactionList) {
-//            if ("Expend".equals(transaction.getTransactionType())) {
-//                totalExpenseAmountBudget += Double.parseDouble(transaction.getAmount());
-//            }
-//        }
-//
-//        budgetManager.setTotalExpenses(totalExpenseAmountBudget);
-//    }
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_budget_detail, null);
+        builder.setView(dialogView);
+
+        TextView tvBudgetAmount = dialogView.findViewById(R.id.tv_budget_amount);
+        TextView tvExpenses = dialogView.findViewById(R.id.tv_expenses);
+        TextView tvRemaining = dialogView.findViewById(R.id.tv_remaining);
+        CircularProgressView progressView = dialogView.findViewById(R.id.progress_view);
+
+        double expenses = budgetManager.getExpensesForBudget(item.getName());
+        double remaining = item.getTotalAmount() - expenses;
+
+        tvBudgetAmount.setText("Budget: " + String.format("$%,.0f", item.getTotalAmount()));
+        tvExpenses.setText("Expenses: " + String.format("$%,.0f", expenses));
+        tvRemaining.setText("Remain: " + String.format("$%,.0f", remaining));
+
+        int progress = item.getTotalAmount() > 0 ? (int) ((remaining / item.getTotalAmount()) * 100) : 0;
+        progressView.setProgress(progress);
+        progressView.setShowRemainingText(true);
+
+        builder.setPositiveButton("OK", null);
+        builder.show();
+    }
+
 
 }

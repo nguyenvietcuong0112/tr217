@@ -37,7 +37,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     private BudgetManager budgetManager;
     private CircularProgressView mainProgressView;
     private TextView tvTotalBudget, tvExpenses;
-    private ImageView ivEditBudget;
     //    private RecyclerView rvBudgets;
     private ImageView btnBudgetDetail;
     private List<TransactionModel> allTransactionList;
@@ -48,7 +47,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         initializeViews(view);
         setupBudgetManager();
         loadTransactionData();
-//        setupRecyclerView();
         setupListeners();
         updateUI();
         return view;
@@ -57,7 +55,6 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     private void initializeViews(View view) {
         mainProgressView = view.findViewById(R.id.main_progress_view);
         tvTotalBudget = view.findViewById(R.id.tv_total_budget);
-        ivEditBudget = view.findViewById(R.id.iv_edit_budget);
         tvExpenses = view.findViewById(R.id.tv_expenses);
 //        rvBudgets = view.findViewById(R.id.rv_budgets);
         btnBudgetDetail = view.findViewById(R.id.btn_budget_detail);
@@ -70,19 +67,11 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         }
     }
 
-//    private void setupRecyclerView() {
-//        budgetAdapter = new BudgetAdapter(requireContext(), budgetManager.getBudgetItems(), this);
-//        rvBudgets.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-//        rvBudgets.setAdapter(budgetAdapter);
-//    }
 
     private void setupListeners() {
-        // Cho phép chỉnh sửa tổng ngân sách khi click vào TextView hoặc icon
         View.OnClickListener editBudgetListener = v -> showEditBudgetDialog();
         tvTotalBudget.setOnClickListener(editBudgetListener);
-        ivEditBudget.setOnClickListener(editBudgetListener);
 
-//        btnAddBudget.setOnClickListener(v -> showAddBudgetDialog());
         btnBudgetDetail.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), BudgetDetailActivity.class);
             startActivity(intent);
@@ -111,6 +100,8 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
 
     private void calculateAndUpdateTotalExpenses() {
         if (allTransactionList == null || allTransactionList.isEmpty()) {
+            budgetManager.setTotalExpenses(0);
+            updateUI();
             return;
         }
 
@@ -121,8 +112,9 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
             }
         }
 
-        // Lưu tổng chi phí vào BudgetManager
         budgetManager.setTotalExpenses(totalExpenseAmount);
+
+        updateUI();
     }
 
     private void showEditBudgetDialog() {
@@ -152,18 +144,19 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         double totalExpenses = budgetManager.getTotalExpenses();
         double remaining = totalBudget - totalExpenses;
 
-        // Update text views
-        tvTotalBudget.setText(String.format("$%.2f", remaining));
-        tvExpenses.setText(String.format("$%.2f", totalExpenses));
-//        tvRemaining.setText(String.format("$%.2f", remaining));
+        tvTotalBudget.setText(String.format("$%,.2f", totalBudget));
+        tvExpenses.setText("Expenses: " + String.format("$%,.2f", totalExpenses));
 
-        // Update main progress
         int progress = totalBudget > 0 ? (int) ((remaining / totalBudget) * 100) : 0;
+
+        progress = Math.max(0, Math.min(100, progress));
+
+        // Cập nhật progress view
         mainProgressView.setProgress(progress);
+        mainProgressView.setShowRemainingText(true);
     }
 
     @Override
     public void onBudgetItemClick(BudgetItem item) {
-        // Handle budget item click - show details, edit, etc.
     }
 }

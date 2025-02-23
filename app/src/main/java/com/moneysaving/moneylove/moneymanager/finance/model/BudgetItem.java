@@ -23,9 +23,12 @@ public class BudgetItem {
     }
 
     public void addExpense(double amount) {
-        this.spentAmount += amount;
+        if (spentAmount + amount > totalAmount) {
+            this.spentAmount = totalAmount; // Đảm bảo không vượt quá tổng ngân sách
+        } else {
+            this.spentAmount += amount;
+        }
     }
-
     public double getRemainingAmount() {
         return totalAmount - spentAmount;
     }
@@ -36,6 +39,10 @@ public class BudgetItem {
     }
 
     // Getters
+
+    public void setSpentAmount(double spentAmount) {
+        this.spentAmount = spentAmount;
+    }
     public String getName() { return name; }
     public double getTotalAmount() { return totalAmount; }
     public double getSpentAmount() { return spentAmount; }

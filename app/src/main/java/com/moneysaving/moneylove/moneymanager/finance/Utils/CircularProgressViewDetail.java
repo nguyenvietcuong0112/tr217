@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class CircularProgressView extends View {
+public class CircularProgressViewDetail extends View {
     private Paint paint, textPaint;
     private RectF rectF;
     private int progress = 75;
@@ -17,7 +17,7 @@ public class CircularProgressView extends View {
     private boolean showRemainingText = true;
 
 
-    public CircularProgressView(Context context, AttributeSet attrs) {
+    public CircularProgressViewDetail(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -27,7 +27,7 @@ public class CircularProgressView extends View {
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
 
-        paint.setStrokeWidth(60f);
+        paint.setStrokeWidth(20f);
 
 
         textPaint = new Paint();
