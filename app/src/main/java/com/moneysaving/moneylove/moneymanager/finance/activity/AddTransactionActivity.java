@@ -51,7 +51,7 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     private RecyclerView rvCategories;
     private LinearLayout layoutLender, layoutBudget;
-    private String currentTransactionType = "Expend"; // Mặc định là Expend
+    private String currentTransactionType = "Expend";
     private int colorActive, colorInactive;
     private ImageView ivExpend, ivIncome, ivLoan;
     private TextView tvExpendLabel, tvIncomeLabel, tvLoanLabel;
@@ -65,7 +65,6 @@ public class AddTransactionActivity extends AppCompatActivity {
     private CategoryAdapter categoryAdapter;
     private CategoryItem selectedCategory;
 
-    // Các danh sách danh mục cho từng loại giao dịch
     private List<CategoryItem> expenseCategories;
     private List<CategoryItem> incomeCategories;
     private List<CategoryItem> loanCategories;
@@ -144,7 +143,7 @@ public class AddTransactionActivity extends AppCompatActivity {
 
 
         String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
-        if (currentCurrency.isEmpty()) currentCurrency = "VND";
+        if (currentCurrency.isEmpty()) currentCurrency = "USD";
         tvCurrency.setText(currentCurrency);
     }
 
@@ -159,15 +158,12 @@ public class AddTransactionActivity extends AppCompatActivity {
     private void updateTabColors(String selectedType) {
         currentTransactionType = selectedType;
 
-        // Update màu cho Expend
         ivExpend.setColorFilter(selectedType.equals("Expend") ? colorActive : colorInactive);
         tvExpendLabel.setTextColor(selectedType.equals("Expend") ? colorActive : colorInactive);
 
-        // Update màu cho Income
         ivIncome.setColorFilter(selectedType.equals("Income") ? colorActive : colorInactive);
         tvIncomeLabel.setTextColor(selectedType.equals("Income") ? colorActive : colorInactive);
 
-        // Update màu cho Loan
         ivLoan.setColorFilter(selectedType.equals("Loan") ? colorActive : colorInactive);
         tvLoanLabel.setTextColor(selectedType.equals("Loan") ? colorActive : colorInactive);
     }
@@ -198,6 +194,7 @@ public class AddTransactionActivity extends AppCompatActivity {
             rbExpend.setBackgroundResource(R.drawable.bg_tab_item_false);
             rbIncome.setBackgroundResource(R.drawable.bg_tab_item_false);
             rbLoan.setBackgroundResource(R.drawable.bg_tab_item_true);
+
             updateTabColors("Loan");
 
             updateTabSelection(rbLoan);
@@ -217,7 +214,6 @@ public class AddTransactionActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        // Thiết lập TimePicker
         btnTime.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             TimePickerDialog timePickerDialog = new TimePickerDialog(this,
@@ -233,7 +229,6 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     private void initCategories() {
-        // Khởi tạo danh mục chi tiêu
         expenseCategories = new ArrayList<>();
         expenseCategories.add(new CategoryItem(R.drawable.ic_food, "Food"));
         expenseCategories.add(new CategoryItem(R.drawable.ic_social, "Social"));
@@ -244,9 +239,10 @@ public class AddTransactionActivity extends AppCompatActivity {
         expenseCategories.add(new CategoryItem(R.drawable.ic_bills, "Bills"));
         expenseCategories.add(new CategoryItem(R.drawable.ic_rentals, "Rentals"));
         expenseCategories.add(new CategoryItem(R.drawable.ic_medical, "Medical"));
+        expenseCategories.add(new CategoryItem(R.drawable.ic_investment, "Investment"));
+        expenseCategories.add(new CategoryItem(R.drawable.ic_gift, "Gift"));
         expenseCategories.add(new CategoryItem(R.drawable.ic_other, "Other"));
 
-        // Khởi tạo danh mục thu nhập
         incomeCategories = new ArrayList<>();
         incomeCategories.add(new CategoryItem(R.drawable.ic_salary, "Salary"));
         incomeCategories.add(new CategoryItem(R.drawable.ic_invest, "Invest"));
@@ -255,7 +251,6 @@ public class AddTransactionActivity extends AppCompatActivity {
         incomeCategories.add(new CategoryItem(R.drawable.ic_extra_income, "Extra Income"));
         incomeCategories.add(new CategoryItem(R.drawable.ic_other, "Other"));
 
-        // Khởi tạo danh mục khoản vay
         loanCategories = new ArrayList<>();
         loanCategories.add(new CategoryItem(R.drawable.ic_loan, "Loan"));
         loanCategories.add(new CategoryItem(R.drawable.ic_borrow, "Borrow"));
@@ -273,28 +268,21 @@ public class AddTransactionActivity extends AppCompatActivity {
     private void selectTransactionType(String type) {
         transactionType = type;
 
-        // Hiển thị/ẩn các layout dựa trên loại giao dịch
         switch (type) {
             case "Expend":
-                // Hiển thị danh mục chi tiêu
                 setupCategoryGrid(expenseCategories);
-                // Hiển thị budget, ẩn lender
                 layoutBudget.setVisibility(View.VISIBLE);
                 layoutLender.setVisibility(View.GONE);
                 break;
 
             case "Income":
-                // Hiển thị danh mục thu nhập
                 setupCategoryGrid(incomeCategories);
-                // Ẩn cả budget và lender
                 layoutBudget.setVisibility(View.GONE);
                 layoutLender.setVisibility(View.GONE);
                 break;
 
             case "Loan":
-                // Hiển thị danh mục khoản vay
                 setupCategoryGrid(loanCategories);
-                // Hiển thị lender, ẩn budget
                 layoutBudget.setVisibility(View.GONE);
                 layoutLender.setVisibility(View.VISIBLE);
                 break;
@@ -302,7 +290,6 @@ public class AddTransactionActivity extends AppCompatActivity {
     }
 
     private void saveTransactionData() {
-        // Kiểm tra đầu vào
         if (etAmount.getText().toString().trim().isEmpty()) {
             Toast.makeText(this, "Please enter amount", Toast.LENGTH_SHORT).show();
             return;
@@ -315,7 +302,6 @@ public class AddTransactionActivity extends AppCompatActivity {
         String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
         if (currentCurrency.isEmpty()) currentCurrency = "USD";
 
-        // Lấy dữ liệu từ các trường
         String amount = etAmount.getText().toString();
         String note = etNote.getText().toString();
         String budget = "None";
@@ -324,7 +310,6 @@ public class AddTransactionActivity extends AppCompatActivity {
             budget = spBudget.getSelectedItem().toString();
         }
 
-        // Tạo đối tượng giao dịch
         TransactionModel transaction = new TransactionModel(
                 transactionType,
                 amount,
@@ -337,20 +322,17 @@ public class AddTransactionActivity extends AppCompatActivity {
                 selectedTime
         );
 
-        // Nếu là Loan, lưu thêm thông tin lender
         if ("Loan".equals(transactionType)) {
             String lenderText = etLender.getText().toString();
             transaction.setLender(lenderText);
         }
 
-        // Lưu giao dịch
         sharePreferenceUtils.saveTransaction(transaction);
 
         if ("Expend".equals(transactionType) && !"None".equals(budget)) {
             BudgetManager budgetManager = new BudgetManager(this);
-            budgetManager.updateBudgetExpenses(budget); // Gọi hàm updateBudgetExpenses
+            budgetManager.updateBudgetExpenses(budget);
         }
-        // Chuyển dữ liệu về màn hình trước
         Gson gson = new Gson();
         String transactionJson = gson.toJson(transaction);
 
@@ -358,7 +340,6 @@ public class AddTransactionActivity extends AppCompatActivity {
         resultIntent.putExtra("transactionData", transactionJson);
         setResult(RESULT_OK, resultIntent);
 
-        // Hiển thị thông báo thành công
         Toast.makeText(this, "Transaction saved successfully", Toast.LENGTH_SHORT).show();
 
         finish();
@@ -367,11 +348,9 @@ public class AddTransactionActivity extends AppCompatActivity {
     private void loadPreviousData() {
         TransactionModel transaction = sharePreferenceUtils.getTransaction();
         if (transaction != null) {
-            // Thiết lập các giá trị từ giao dịch đã lưu
             etAmount.setText(transaction.getAmount());
             etNote.setText(transaction.getNote());
 
-            // Thiết lập loại giao dịch
             switch (transaction.getTransactionType()) {
                 case "Expend":
                     updateTabSelection(rbExpend);
@@ -393,12 +372,10 @@ public class AddTransactionActivity extends AppCompatActivity {
                     break;
             }
 
-            // Thiết lập spinner budget nếu là Expend
             if ("Expend".equals(transaction.getTransactionType())) {
                 setSpinnerSelection(spBudget, transaction.getBudget());
             }
 
-            // Thiết lập ngày và giờ
             if (transaction.getDate() != null) {
                 selectedDate = transaction.getDate();
                 tv_date.setText(selectedDate);

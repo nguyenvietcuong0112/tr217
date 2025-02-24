@@ -60,7 +60,7 @@
                 android:textColor="@color/black"
                 android:fontFamily="@font/roboto_medium"
                 android:layout_marginVertical="@dimen/_5sdp"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_12sdp"
                 />
 
             <TextView
@@ -70,7 +70,7 @@
                 android:text="asfas"
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_12sdp"
                 android:layout_marginVertical="@dimen/_5sdp"
                 />
 
@@ -82,15 +82,15 @@
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/black"
                 android:layout_marginVertical="@dimen/_5sdp"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_12sdp"
 
                  />
 
         </LinearLayout>
         <com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView
             android:id="@+id/main_progress_view"
-            android:layout_width="@dimen/_110sdp"
-            android:layout_height="@dimen/_110sdp"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_100sdp"
            />
     </LinearLayout>
 

@@ -17,7 +17,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         def formattedDate = new Date().format('MM.dd.yyyy')
-        archivesBaseName = "TR203_AIMoneyTracker_v${versionName}_(${versionCode})_${formattedDate}"
+        archivesBaseName = "TR217_MoneyManager_v${versionName}_(${versionCode})_${formattedDate}"
     }
 
     buildTypes {

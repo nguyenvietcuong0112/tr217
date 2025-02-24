@@ -6,30 +6,21 @@
     android:layout_height="match_parent">
 
 
-    <ImageView
-        android:id="@+id/iv_bot"
-        android:layout_width="@dimen/_70sdp"
-        android:layout_height="@dimen/_70sdp"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/ic_ai_bot"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <TextView
         android:id="@+id/tv_title"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:text="What do you want to achieve with AI Money Tracker?"
-        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:text="What type of expenses do you manage the most?"
+         android:textColor="#49566A"
         android:textSize="16sp"
+        android:paddingHorizontal="@dimen/_50sdp"
+        android:gravity="center"
+        android:fontFamily="@font/roboto_regular"
         android:src="@drawable/img_bot_interest"
-        app:layout_constraintBottom_toBottomOf="@id/iv_bot"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_bot"
-        app:layout_constraintTop_toTopOf="@id/iv_bot" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <CheckBox
         android:id="@+id/cbTrackExpenses"
@@ -41,11 +32,11 @@
         android:background="@drawable/interest_selector"
         android:button="@null"
         android:padding="12dp"
-        android:text="Track expenses and income"
+        android:text="Bills &amp; Utilities"
         android:textColor="@color/interest_text_color"
         app:layout_constraintEnd_toStartOf="@id/cbMonitorSavings"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_bot" />
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     <CheckBox
         android:id="@+id/cbMonitorSavings"
@@ -55,7 +46,7 @@
         android:background="@drawable/interest_selector"
         android:button="@null"
         android:padding="12dp"
-        android:text="Monitor savings"
+        android:text="Food &amp; Dining"
         android:textColor="@color/interest_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cbTrackExpenses"
@@ -71,7 +62,7 @@
         android:background="@drawable/interest_selector"
         android:button="@null"
         android:padding="12dp"
-        android:text="Analyze spending"
+        android:text="Shopping"
         android:textColor="@color/interest_text_color"
         app:layout_constraintEnd_toStartOf="@id/cbOptimizeSpending"
         app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +76,7 @@
         android:background="@drawable/interest_selector"
         android:button="@null"
         android:padding="12dp"
-        android:text="Optimize spending"
+        android:text="Transportation"
         android:textColor="@color/interest_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cbAnalyzeSpending"
@@ -101,7 +92,7 @@
         android:background="@drawable/interest_selector"
         android:button="@null"
         android:padding="12dp"
-        android:text="Plan investments"
+        android:text="Healthcare"
         android:textColor="@color/interest_text_color"
         app:layout_constraintEnd_toStartOf="@id/cbFinancialReports"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,7 +106,7 @@
         android:background="@drawable/interest_selector"
         android:button="@null"
         android:padding="12dp"
-        android:text="Financial reports"
+        android:text="Entertainment"
         android:textColor="@color/interest_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cbPlanInvestments"

@@ -19,7 +19,6 @@ import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils
 import com.moneysaving.moneylove.moneymanager.finance.activity.CurrencyUnitActivity;
 import com.moneysaving.moneylove.moneymanager.finance.activity.LanguageActivity;
 import com.moneysaving.moneylove.moneymanager.finance.activity.MainActivity;
-import com.moneysaving.moneylove.moneymanager.finance.adapter.TransactionAdapter;
 
 import java.util.Timer;
 import java.util.TimerTask;

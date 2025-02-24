@@ -16,9 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
+
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class BudgetDetailActivity extends AppCompatActivity {
     private CircularProgressView mainProgressView;
@@ -28,12 +32,17 @@ public class BudgetDetailActivity extends AppCompatActivity {
     private BudgetAdapter budgetAdapter;
     private LinearLayout btnAddBudget;
     ImageView iv_back;
+    String currentCurrency;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_detail);
+
+        currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
+        if (currentCurrency.isEmpty()) currentCurrency = "$";
 
         mainProgressView = findViewById(R.id.main_progress_view);
         tvTotalBudget = findViewById(R.id.tv_total_budget);
@@ -65,10 +74,11 @@ public class BudgetDetailActivity extends AppCompatActivity {
         double totalBudget = budgetManager.getTotalBudget();
         double totalExpenses = budgetManager.getTotalExpenses();
         double remaining = totalBudget - totalExpenses;
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
 
-        tvTotalBudget.setText("Budget: " + String.format("$%,.0f", totalBudget));
-        tvExpenses.setText("Expenses: " + String.format("$%,.0f", totalExpenses));
-        tvRemaining.setText("Remain: " + String.format("$%,.0f", remaining));
+        tvTotalBudget.setText("Budget: " + currentCurrency + formatter.format(totalBudget));
+        tvExpenses.setText("Expenses: " + currentCurrency + formatter.format(totalExpenses));
+        tvRemaining.setText("Remain: " + currentCurrency + formatter.format(remaining));
 
         int progress = totalBudget > 0 ? (int) ((remaining / totalBudget) * 100) : 0;
         mainProgressView.setProgress(progress);
@@ -82,11 +92,15 @@ public class BudgetDetailActivity extends AppCompatActivity {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_budget, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
 
         EditText etName = dialogView.findViewById(R.id.et_budget_name);
         EditText etAmount = dialogView.findViewById(R.id.et_budget_amount);
 
-        builder.setPositiveButton("Add", (dialog, which) -> {
+        ImageView btnAdd = dialogView.findViewById(R.id.btn_add_budget);
+        TextView btnCancel = dialogView.findViewById(R.id.btn_cancel_budget);
+
+        btnAdd.setOnClickListener(v -> {
             String name = etName.getText().toString();
             String amountStr = etAmount.getText().toString();
 
@@ -95,16 +109,42 @@ public class BudgetDetailActivity extends AppCompatActivity {
                 return;
             }
 
-            double amount = Double.parseDouble(amountStr);
-            BudgetItem newBudget = new BudgetItem(name, amount);
+            try {
+                double amount = Double.parseDouble(amountStr);
+                BudgetItem newBudget = new BudgetItem(name, amount);
 
-            budgetManager.saveBudgetItem(newBudget);
-            budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
-            updateUI();
+                budgetManager.saveBudgetItem(newBudget);
+                budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
+                updateUI();
+                dialog.dismiss();
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
+            }
         });
 
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+
+//        builder.setPositiveButton("Add", (dialog, which) -> {
+//            String name = etName.getText().toString();
+//            String amountStr = etAmount.getText().toString();
+//
+//            if (name.isEmpty() || amountStr.isEmpty()) {
+//                Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            double amount = Double.parseDouble(amountStr);
+//            BudgetItem newBudget = new BudgetItem(name, amount);
+//
+//            budgetManager.saveBudgetItem(newBudget);
+//            budgetAdapter.updateBudgets(budgetManager.getBudgetItems());
+//            updateUI();
+//        });
+//
+//        builder.setNegativeButton("Cancel", null);
+//        builder.show();
     }
 
     private void showBudgetDetailDialog(BudgetItem item) {

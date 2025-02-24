@@ -193,4 +193,5 @@ public class MainActivity extends AppCompatActivity {
     public List<TransactionModel> getTransactionList() {
         return transactionList;
     }
+
 }

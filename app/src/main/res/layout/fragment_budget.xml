@@ -27,7 +27,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_50sdp"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="10dp"
             android:orientation="horizontal">
@@ -35,7 +35,7 @@
             <TextView
                 android:id="@+id/tv_total_budget"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_40sdp"
                 android:layout_gravity="center_vertical"
                 android:fontFamily="@font/roboto_bold"
                 android:text="100,000"
@@ -46,10 +46,10 @@
             <ImageView
                 android:id="@+id/iv_edit_balance"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_40sdp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:src="@drawable/ic_visibility" />
+                android:src="@drawable/ic_edit_budget" />
 
         </LinearLayout>
 
@@ -61,6 +61,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_10sdp"
+            android:visibility="gone"
             android:background="@drawable/bg_dayofyear"
             android:orientation="horizontal">
 
@@ -104,15 +105,30 @@
             android:textSize="20sp"
             android:fontFamily="@font/roboto_bold"
             android:textColor="@color/black"
-            android:layout_marginTop="24dp"/>
+            android:layout_marginTop="15dp"/>
 
-        <ImageView
+
+        <LinearLayout
             android:id="@+id/btn_budget_detail"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:background="@drawable/bg_blue_btn"
-            android:text="Budget Detail"
-            android:layout_marginTop="16dp"/>
+            android:orientation="horizontal"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:backgroundTint="#3151E7"
+                android:layout_gravity="center"
+                android:text="Budget Detail"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -58,7 +58,7 @@ public class GuideActivity extends BaseActivity implements View.OnClickListener 
 //        if(!SharePreferenceUtils.isOrganic(this)){
 //            loadInterIntro();
 //        }
-        binding.ivBack.setOnClickListener(view -> onBackPressed());
+//        binding.ivBack.setOnClickListener(view -> onBackPressed());
     }
 
     @Override

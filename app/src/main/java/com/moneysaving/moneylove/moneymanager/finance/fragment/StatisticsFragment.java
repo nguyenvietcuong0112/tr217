@@ -1,13 +1,20 @@
 package com.moneysaving.moneylove.moneymanager.finance.fragment;
 
+import android.app.Dialog;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,6 +33,7 @@ import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.TransactionUpdateEvent;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -38,7 +46,7 @@ import java.util.stream.Collectors;
 
 public class StatisticsFragment extends Fragment {
     private TextView tvTotalBalance, tvSelectedMonth;
-    private LinearLayout llExpend, llIncome, llLoan,llSelectedMmonth;
+    private LinearLayout llExpend, llIncome, llLoan, llSelectedMmonth;
     private LinearLayout llCategoryList;
     private BarChart barChart;
 
@@ -79,7 +87,8 @@ public class StatisticsFragment extends Fragment {
         if (getArguments() != null && getArguments().containsKey("transactionList")) {
             String transactionListJson = getArguments().getString("transactionList");
             if (transactionListJson != null && !transactionListJson.isEmpty()) {
-                Type type = new TypeToken<List<TransactionModel>>() {}.getType();
+                Type type = new TypeToken<List<TransactionModel>>() {
+                }.getType();
                 allTransactionList = new Gson().fromJson(transactionListJson, type);
                 if (allTransactionList == null) {
                     allTransactionList = new ArrayList<>();
@@ -119,12 +128,10 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void updateTransactionTypeUI() {
-        // Đặt lại trạng thái của tất cả các loại giao dịch
         llExpend.setBackgroundResource(currentTransactionType.equals("Expend") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
         llIncome.setBackgroundResource(currentTransactionType.equals("Income") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
         llLoan.setBackgroundResource(currentTransactionType.equals("Loan") ? R.drawable.bg_tab_item_true : R.drawable.bg_tab_item_false);
 
-        // Cập nhật màu sắc và style cho tab được chọn
         ImageView ivExpend = llExpend.findViewById(R.id.iv_expend);
         TextView tvExpendLabel = llExpend.findViewById(R.id.tv_expend_label);
         ImageView ivIncome = llIncome.findViewById(R.id.iv_income);
@@ -146,14 +153,11 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void updateStatistics() {
-        // Clear previous data
         categoryTotals.clear();
         double totalAmount = 0;
 
-        // Filter transactions by type and month
         List<TransactionModel> filteredTransactions = filterTransactionsByMonthAndType();
 
-        // Calculate totals by category
         for (TransactionModel transaction : filteredTransactions) {
             String category = transaction.getCategoryName();
             double amount = Double.parseDouble(transaction.getAmount());
@@ -164,10 +168,8 @@ public class StatisticsFragment extends Fragment {
         NumberFormat formatter = NumberFormat.getInstance(Locale.US);
         tvTotalBalance.setText(currentCurrency + formatter.format(totalAmount));
 
-        // Update category list
         updateCategoryList();
 
-        // Update chart
         updateChart();
     }
 
@@ -189,7 +191,7 @@ public class StatisticsFragment extends Fragment {
     private void updateCategoryList() {
         llCategoryList.removeAllViews();
 
-         List<Map.Entry<String, Double>> sortedCategories = new ArrayList<>(categoryTotals.entrySet());
+        List<Map.Entry<String, Double>> sortedCategories = new ArrayList<>(categoryTotals.entrySet());
         sortedCategories.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue()));
 
         for (Map.Entry<String, Double> entry : sortedCategories) {
@@ -200,7 +202,8 @@ public class StatisticsFragment extends Fragment {
             TextView tvAmount = categoryItem.findViewById(R.id.tvCategoryAmount);
 
             tvCategory.setText(entry.getKey());
-            tvAmount.setText(String.format(Locale.US, "$%.2f", entry.getValue()));
+            NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+            tvAmount.setText(currentCurrency + formatter.format(entry.getValue()));
 
             llCategoryList.addView(categoryItem);
         }
@@ -228,7 +231,12 @@ public class StatisticsFragment extends Fragment {
                 Color.parseColor("#6EADFF"),
                 Color.parseColor("#79F2C0"),
                 Color.parseColor("#2FE3FF"),
-                Color.parseColor("#FFD84C"));
+                Color.parseColor("#FFD84C"),
+                Color.parseColor("#F18474"),
+                Color.parseColor("#338AD4"),
+                Color.parseColor("#DC6596"),
+                Color.parseColor("#FF951C")
+        );
         dataSet.setValueTextSize(12f);
 
         BarData barData = new BarData(dataSet);
@@ -251,23 +259,107 @@ public class StatisticsFragment extends Fragment {
         leftAxis.setAxisMinimum(0f);
         barChart.getAxisRight().setEnabled(false);
 
-        barChart.invalidate(); // Refresh chart
+        barChart.invalidate();
     }
 
     private void showMonthPickerDialog() {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.setContentView(R.layout.picker_month_dialog);
+
         Calendar calendar = Calendar.getInstance();
-        String[] months = new String[] {"January", "February", "March", "April", "May", "June",
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        TextView yearText = dialog.findViewById(R.id.tv_year);
+        yearText.setText(String.valueOf(currentYear));
+
+        ImageButton prevYear = dialog.findViewById(R.id.btn_previous_year);
+        ImageButton nextYear = dialog.findViewById(R.id.btn_next_year);
+
+        prevYear.setOnClickListener(v -> {
+            int year = Integer.parseInt(yearText.getText().toString()) - 1;
+            yearText.setText(String.valueOf(year));
+        });
+
+        nextYear.setOnClickListener(v -> {
+            int year = Integer.parseInt(yearText.getText().toString()) + 1;
+            yearText.setText(String.valueOf(year));
+        });
+
+        int[] monthIds = {
+                R.id.month_jan, R.id.month_feb, R.id.month_mar, R.id.month_apr,
+                R.id.month_may, R.id.month_jun, R.id.month_jul, R.id.month_aug,
+                R.id.month_sep, R.id.month_oct, R.id.month_nov, R.id.month_dec
+        };
+
+        String[] months = {"January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"};
 
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getContext());
-        builder.setTitle("Choose Month")
-                .setItems(months, (dialog, which) -> {
-                    currentMonth = months[which] + " " + calendar.get(Calendar.YEAR);
-                    tvSelectedMonth.setText(currentMonth);
-                    updateStatistics();
-                });
-        builder.create().show();
+        final TextView[] selectedMonthHolder = new TextView[1];
+
+        String currentSelectedMonth = tvSelectedMonth.getText().toString();
+        String currentMonthAbbrev = "";
+        if (!currentSelectedMonth.isEmpty()) {
+            currentMonthAbbrev = currentSelectedMonth.split(" ")[0].substring(0, 3);
+        }
+
+        for (int i = 0; i < monthIds.length; i++) {
+            TextView monthView = dialog.findViewById(monthIds[i]);
+            monthView.setText(months[i].substring(0, 3));
+
+            if (monthView.getText().toString().equals(currentMonthAbbrev)) {
+                monthView.setBackgroundResource(R.drawable.bg_selected_month);
+                monthView.setTextColor(getResources().getColor(android.R.color.white));
+                selectedMonthHolder[0] = monthView;
+            }
+        }
+
+        for (int id : monthIds) {
+            TextView monthView = dialog.findViewById(id);
+
+            monthView.setOnClickListener(v -> {
+                for (int idInner : monthIds) {
+                    dialog.findViewById(idInner).setBackgroundResource(android.R.color.transparent);
+                    ((TextView) dialog.findViewById(idInner)).setTextColor(getResources().getColor(android.R.color.black));
+                }
+
+                v.setBackgroundResource(R.drawable.bg_selected_month);
+                ((TextView) v).setTextColor(getResources().getColor(android.R.color.white));
+                selectedMonthHolder[0] = (TextView) v;
+            });
+        }
+
+        dialog.findViewById(R.id.btn_cancel).setOnClickListener(v -> dialog.dismiss());
+
+        dialog.findViewById(R.id.btn_save).setOnClickListener(v -> {
+            if (selectedMonthHolder[0] != null) {
+                String month = selectedMonthHolder[0].getText().toString();
+                String year = yearText.getText().toString();
+                String fullMonthName = months[Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").indexOf(month)];
+                currentMonth = fullMonthName + " " + year;
+                tvSelectedMonth.setText(currentMonth);
+                updateStatistics();
+                dialog.dismiss();
+            }
+        });
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int width = (int) (displayMetrics.widthPixels * 0.9);
+
+            WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+            params.copyFrom(window.getAttributes());
+            params.width = width;
+            params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            window.setAttributes(params);
+            window.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        dialog.show();
     }
+
 
     private Date parseTransactionDate(String dateString) {
         SimpleDateFormat[] dateFormats = {

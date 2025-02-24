@@ -33,6 +33,10 @@
             android:name=".activity.InterestActivity"
             android:theme="@style/Theme.Design.NoActionBar"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.TransactionDetailActivity"
+            android:theme="@style/Theme.Design.NoActionBar"
+            android:screenOrientation="portrait" />
 
 
         <activity

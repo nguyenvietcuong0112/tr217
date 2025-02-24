@@ -16,19 +16,14 @@
         <item>December</item>
     </string-array>
 
-    <string name="note_continue1">Take Control of Your Finances with AI!</string>
-    <string name="note_continue2">Smart Income &amp; Expense Tracking</string>
-    <string name="note_continue3">Get Personalized Financial Insights</string>
-    <string name="note_continue4">Let’s Make Your Money Work for You!</string>
+    <string name="note_continue1">Keep track of your spending effortlessly</string>
+    <string name="note_continue2">Get insights with detailed statistics</string>
+    <string name="note_continue3">Smart tools to grow your savings effortlessly</string>
+    <string name="note_continue4">Plan wisely and stay  financially secure</string>
 
-    <string name="note_guide1"></string>
-    <string name="note_guide2"></string>
-    <string name="note_guide3"></string>
-    <string name="note_guide4"></string>
-    <string-array name="currency_array">
-        <item>USD</item>
-        <item>EUR</item>
-        <item>VND</item>
-        <item>JPY</item>
-    </string-array>
+    <string name="note_guide1">Tap ‘Budget’ to manage your spending</string>
+    <string name="note_guide2">See your remaining balance at a glance</string>
+    <string name="note_guide3">Switch between budgets effortlessly</string>
+    <string name="note_guide4">Analyze spending and stay on track</string>
+
 </resources>

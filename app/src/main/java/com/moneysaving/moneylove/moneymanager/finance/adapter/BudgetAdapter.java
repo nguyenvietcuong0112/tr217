@@ -13,9 +13,12 @@ import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressViewDetail;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder> {
     private Context context;
@@ -50,11 +53,14 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     @Override
     public void onBindViewHolder(BudgetViewHolder holder, int position) {
         BudgetItem item = budgets.get(position);
+        String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(context);
+        if (currentCurrency.isEmpty()) currentCurrency = "$";
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
 
         holder.tvName.setText(item.getName());
-        holder.tvAmount.setText(String.format("$%.2f", item.getTotalAmount()));
+        holder.tvAmount.setText(currentCurrency + formatter.format(item.getTotalAmount()));
 
-        // Sử dụng BudgetManager để lấy chi tiêu của budget
+
         double expenses = budgetManager.getExpensesForBudget(item.getName());
         double remaining = item.getTotalAmount() - expenses;
         int progress = item.getTotalAmount() > 0 ? (int) ((remaining / item.getTotalAmount()) * 100) : 0;

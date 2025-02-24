@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -24,22 +25,27 @@ import com.google.gson.reflect.TypeToken;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.activity.BudgetDetailActivity;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
 import java.lang.reflect.Type;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItemListener {
     private BudgetManager budgetManager;
     private CircularProgressView mainProgressView;
     private TextView tvTotalBudget, tvExpenses;
-    //    private RecyclerView rvBudgets;
-    private ImageView btnBudgetDetail;
+    private LinearLayout btnBudgetDetail;
     private List<TransactionModel> allTransactionList;
+    ImageView ivEditBalance;
+    String currentCurrency;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,24 +59,27 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
     }
 
     private void initializeViews(View view) {
+        currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(getContext());
+        if (currentCurrency.isEmpty()) currentCurrency = "$";
+
         mainProgressView = view.findViewById(R.id.main_progress_view);
         tvTotalBudget = view.findViewById(R.id.tv_total_budget);
+        ivEditBalance = view.findViewById(R.id.iv_edit_balance);
         tvExpenses = view.findViewById(R.id.tv_expenses);
-//        rvBudgets = view.findViewById(R.id.rv_budgets);
         btnBudgetDetail = view.findViewById(R.id.btn_budget_detail);
     }
 
     private void setupBudgetManager() {
         budgetManager = new BudgetManager(requireContext());
         if (budgetManager.getTotalBudget() == 0) {
-            budgetManager.setTotalBudget(0); // Set ngân sách mặc định
+            budgetManager.setTotalBudget(0);
         }
     }
 
 
     private void setupListeners() {
         View.OnClickListener editBudgetListener = v -> showEditBudgetDialog();
-        tvTotalBudget.setOnClickListener(editBudgetListener);
+        ivEditBalance.setOnClickListener(editBudgetListener);
 
         btnBudgetDetail.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), BudgetDetailActivity.class);
@@ -119,24 +128,28 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
 
     private void showEditBudgetDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Edit Budget");
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_edit_budget, null);
+        builder.setView(dialogView);
 
-        final EditText input = new EditText(requireContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Enter new budget");
-        builder.setView(input);
+        EditText inputBudget = dialogView.findViewById(R.id.input_budget);
+        TextView btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        Button btnSave = dialogView.findViewById(R.id.btn_save);
 
-        builder.setPositiveButton("Save", (dialog, which) -> {
-            String newBudget = input.getText().toString();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnSave.setOnClickListener(v -> {
+            String newBudget = inputBudget.getText().toString();
             if (!newBudget.isEmpty()) {
                 double budgetAmount = Double.parseDouble(newBudget);
                 budgetManager.setTotalBudget(budgetAmount);
                 updateUI();
+                dialog.dismiss();
             }
         });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-        builder.show();
     }
 
     private void updateUI() {
@@ -144,8 +157,10 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
         double totalExpenses = budgetManager.getTotalExpenses();
         double remaining = totalBudget - totalExpenses;
 
-        tvTotalBudget.setText(String.format("$%,.2f", totalBudget));
-        tvExpenses.setText("Expenses: " + String.format("$%,.2f", totalExpenses));
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+        tvTotalBudget.setText(currentCurrency + formatter.format(totalBudget));
+
+        tvExpenses.setText("Expenses: " + currentCurrency + formatter.format(totalExpenses));
 
         int progress = totalBudget > 0 ? (int) ((remaining / totalBudget) * 100) : 0;
 

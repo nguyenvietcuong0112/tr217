@@ -11,7 +11,6 @@ public class CategoryItem {
         this.isSelected = false;
     }
 
-    // Getters and setters
     public int getIconResource() { return iconResource; }
     public String getName() { return name; }
     public boolean isSelected() { return isSelected; }

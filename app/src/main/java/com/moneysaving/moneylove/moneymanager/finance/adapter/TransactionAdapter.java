@@ -1,15 +1,20 @@
 package com.moneysaving.moneylove.moneymanager.finance.adapter;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
+import com.moneysaving.moneylove.moneymanager.finance.activity.TransactionDetailActivity;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
 import java.text.NumberFormat;
@@ -104,10 +109,11 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return items.size();
     }
 
+
     static class DateHeaderViewHolder extends RecyclerView.ViewHolder {
         TextView tvDate, tvTotalAmount;
 
-        View divider;  // Add this to handle divider visibility
+        View divider;
 
 
         DateHeaderViewHolder(@NonNull View itemView) {
@@ -131,7 +137,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCategory, tvAmount,tvTime;
+        TextView tvCategory, tvAmount, tvTime;
 
         TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -168,7 +174,17 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             tvAmount.setText(amountText);
             tvAmount.setTextColor(textColor);
 
-//            tvTime.setText(transaction.getTime());
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(itemView.getContext(), TransactionDetailActivity.class);
+                intent.putExtra("transaction", transaction);
+                Fragment fragment = ((AppCompatActivity) itemView.getContext())
+                        .getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+                if (fragment != null) {
+                    fragment.startActivityForResult(intent, 1001);
+                }
+            });
         }
     }
+
 }

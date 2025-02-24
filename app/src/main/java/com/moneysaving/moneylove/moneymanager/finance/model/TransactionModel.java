@@ -2,7 +2,9 @@ package com.moneysaving.moneylove.moneymanager.finance.model;
 
 import com.google.gson.Gson;
 
-public class TransactionModel {
+import java.io.Serializable;
+
+public class TransactionModel implements Serializable {
     private String transactionType;
     private String amount;
     private String currency;
@@ -12,7 +14,7 @@ public class TransactionModel {
     private String note;
     private String date;
     private String time;
-    private String lender; // Trường thông tin người cho vay
+    private String lender;
 
 
     public TransactionModel(String transactionType, String amount, String currency,  String categoryName, int categoryIcon, String budget, String note, String date, String time) {

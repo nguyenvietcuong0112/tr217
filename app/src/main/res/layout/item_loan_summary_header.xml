@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Borrow"
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="#49566A"/>
+
+        <TextView
+            android:id="@+id/tv_borrow_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/red"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="@dimen/_1sdp"
+        android:background="#EAECF0"
+        android:layout_height="@dimen/_45sdp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loan"
+            android:textSize="16sp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="#49566A"/>
+
+        <TextView
+            android:id="@+id/tv_loan_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/green"
+            android:textStyle="bold"/>
+    </LinearLayout>
+</LinearLayout>
