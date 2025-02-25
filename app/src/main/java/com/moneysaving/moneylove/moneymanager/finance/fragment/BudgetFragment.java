@@ -26,10 +26,14 @@ import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.TransactionUpdateEvent;
 import com.moneysaving.moneylove.moneymanager.finance.activity.BudgetDetailActivity;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Type;
 import java.text.NumberFormat;
@@ -173,5 +177,10 @@ public class BudgetFragment extends Fragment implements BudgetAdapter.BudgetItem
 
     @Override
     public void onBudgetItemClick(BudgetItem item) {
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTransactionUpdated(TransactionUpdateEvent event) {
+        allTransactionList = event.getTransactionList();
     }
 }

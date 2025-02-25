@@ -1,13 +1,17 @@
 package com.moneysaving.moneylove.moneymanager.finance.adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
+import com.moneysaving.moneylove.moneymanager.finance.activity.TransactionDetailActivity;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
 import java.math.BigDecimal;
@@ -212,6 +216,17 @@ public class LoanTransactionAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
             tvAmount.setText(amountText);
             tvAmount.setTextColor(textColor);
+
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(itemView.getContext(), TransactionDetailActivity.class);
+                intent.putExtra("transaction", transaction);
+                Fragment fragment = ((AppCompatActivity) itemView.getContext())
+                        .getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+                if (fragment != null) {
+                    fragment.startActivityForResult(intent, 1001);
+                }
+            });
         }
     }
 }

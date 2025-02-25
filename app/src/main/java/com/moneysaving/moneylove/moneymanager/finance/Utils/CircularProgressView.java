@@ -27,7 +27,7 @@ public class CircularProgressView extends View {
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
 
-        paint.setStrokeWidth(80f);
+        paint.setStrokeWidth(70f);
 
 
         textPaint = new Paint();

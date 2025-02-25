@@ -51,14 +51,12 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         } else {
             items.addAll(transactionList);
         }
-
-        // Đảm bảo chạy trên UI Thread
-        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
-            notifyDataSetChanged();
-        } else {
-            new android.os.Handler(android.os.Looper.getMainLooper()).post(this::notifyDataSetChanged);
-        }
+        notifyDataSetChanged();
     }
+
+
+
+
 
     @Override
     public int getItemViewType(int position) {

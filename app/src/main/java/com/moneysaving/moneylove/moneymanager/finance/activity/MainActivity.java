@@ -113,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
             fragment.setArguments(bundle);
         } else if (fragment instanceof StatisticsFragment) {
             Bundle bundle = new Bundle();
+            transactionList.clear();
+            transactionList=SharePreferenceUtils.getInstance(this).getTransactionList();
             bundle.putString("transactionList", new Gson().toJson(transactionList));
             fragment.setArguments(bundle);
         } else if (fragment instanceof BudgetFragment) {
@@ -173,25 +175,21 @@ public class MainActivity extends AppCompatActivity {
                 if (newTransaction != null) {
                     transactionList = sharePreferenceUtils.getTransactionList();
 
-                    // Tải lại fragment hiện tại để cập nhật dữ liệu
                     if (activeFragment instanceof HomeFragment) {
-                        loadFragment(new HomeFragment());
+                        ((HomeFragment) activeFragment).onTransactionUpdated(new TransactionUpdateEvent(transactionList));
                     } else if (activeFragment instanceof StatisticsFragment) {
-                        loadFragment(new StatisticsFragment());
+                        ((StatisticsFragment) activeFragment).onTransactionUpdated(new TransactionUpdateEvent(transactionList));
                     } else if (activeFragment instanceof BudgetFragment) {
-                        loadFragment(new BudgetFragment());
+                        ((BudgetFragment) activeFragment).onTransactionUpdated(new TransactionUpdateEvent(transactionList));
                     }
 
                     EventBus.getDefault().post(new TransactionUpdateEvent(transactionList));
 
-                    Toast.makeText(this, "Đã thêm giao dịch mới", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Transaction saved successfully", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 
-    public List<TransactionModel> getTransactionList() {
-        return transactionList;
-    }
 
 }

@@ -20,12 +20,15 @@ import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.databinding.ItemCurencyUnitBinding;
 import com.moneysaving.moneylove.moneymanager.finance.model.CurrencyUnitModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CurrencyUnitAdapter extends RecyclerView.Adapter<CurrencyUnitAdapter.CurrencyUnitViewHolder> {
 
     private static Context context;
     private List<CurrencyUnitModel> lists;
+    private List<CurrencyUnitModel> listsFiltered;
+
     private IClickCurrencyUnit iClickCurrencyUnit;
     private int selectedPosition = RecyclerView.NO_POSITION;
 
@@ -38,6 +41,7 @@ public class CurrencyUnitAdapter extends RecyclerView.Adapter<CurrencyUnitAdapte
         this.context = context;
         this.lists = lists;
         this.iClickCurrencyUnit = iClickCurrencyUnit;
+        this.listsFiltered = new ArrayList<>(lists);
 
         String savedCode = getSelectedCurrencyCode(context);
         for (int i = 0; i < lists.size(); i++) {
@@ -46,6 +50,36 @@ public class CurrencyUnitAdapter extends RecyclerView.Adapter<CurrencyUnitAdapte
                 break;
             }
         }
+    }
+
+    public void filter(String query) {
+        listsFiltered.clear();
+
+        if (query.isEmpty()) {
+            listsFiltered.addAll(lists);
+        } else {
+            String lowerCaseQuery = query.toLowerCase().trim();
+
+            for (CurrencyUnitModel currency : lists) {
+                // Search by code, name or country name
+                if (currency.getCode().toLowerCase().contains(lowerCaseQuery) ||
+                        currency.getLanguageName().toLowerCase().contains(lowerCaseQuery)) {
+                    listsFiltered.add(currency);
+                }
+            }
+        }
+
+        // Reset selected position for filtered list
+        selectedPosition = RecyclerView.NO_POSITION;
+        String savedCode = getSelectedCurrencyCode(context);
+        for (int i = 0; i < listsFiltered.size(); i++) {
+            if (listsFiltered.get(i).getCode().equals(savedCode)) {
+                selectedPosition = i;
+                break;
+            }
+        }
+
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -57,18 +91,21 @@ public class CurrencyUnitAdapter extends RecyclerView.Adapter<CurrencyUnitAdapte
 
     @Override
     public void onBindViewHolder(@NonNull CurrencyUnitViewHolder holder, int position) {
-        CurrencyUnitModel data = lists.get(position);
+        // Use listsFiltered instead of lists
+        CurrencyUnitModel data = listsFiltered.get(position);
         holder.bind(data, position == selectedPosition);
 
         holder.binding.rlItem.setOnClickListener(view -> {
             int previousPosition = selectedPosition;
             selectedPosition = holder.getAdapterPosition();
 
-            // Lưu mã code vào SharedPreferences
-            saveSelectedCurrencyCode(context, data.getSymbol());
+            saveSelectedCurrencyCode(context, data.getCode());
             notifyCurrencyChanged(context);
-            // Cập nhật chỉ hai vị trí bị ảnh hưởng
-            notifyItemChanged(previousPosition);
+
+            // Update UI
+            if (previousPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(previousPosition);
+            }
             notifyItemChanged(selectedPosition);
 
             iClickCurrencyUnit.onClick(data);
@@ -82,7 +119,7 @@ public class CurrencyUnitAdapter extends RecyclerView.Adapter<CurrencyUnitAdapte
     }
     @Override
     public int getItemCount() {
-        return lists.size();
+        return listsFiltered.size();
     }
 
     public static class CurrencyUnitViewHolder extends RecyclerView.ViewHolder {

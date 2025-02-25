@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,11 +27,15 @@ import com.google.gson.Gson;
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.TransactionUpdateEvent;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.CategoryAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
 import com.moneysaving.moneylove.moneymanager.finance.model.CategoryItem;
 import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -140,11 +146,63 @@ public class AddTransactionActivity extends AppCompatActivity {
         rbLoan.setBackgroundResource(R.drawable.bg_tab_item_false);
 
         updateTabColors("Expend");
+        configAmount();
 
 
         String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
         if (currentCurrency.isEmpty()) currentCurrency = "USD";
         tvCurrency.setText(currentCurrency);
+    }
+
+    void configAmount() {
+        etAmount.addTextChangedListener(new TextWatcher() {
+            private String current = "";
+            private boolean isUpdating = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isUpdating) {
+                    return;
+                }
+
+                try {
+                    isUpdating = true;
+
+                    String str = s.toString();
+                    if (str.equals(current)) {
+                        isUpdating = false;
+                        return;
+                    }
+
+                    String cleanString = str.replaceAll("[,]", "");
+
+                    if (cleanString.isEmpty()) {
+                        etAmount.setText("");
+                        isUpdating = false;
+                        return;
+                    }
+
+                    long parsed = Long.parseLong(cleanString);
+                    String formatted = NumberFormat.getNumberInstance(Locale.US).format(parsed);
+
+                    current = formatted;
+                    etAmount.setText(formatted);
+                    etAmount.setSelection(formatted.length());
+
+                } catch (NumberFormatException e) {
+                } finally {
+                    isUpdating = false;
+                }
+            }
+        });
     }
 
     private void updateTabSelection(LinearLayout selectedTab) {
@@ -302,7 +360,7 @@ public class AddTransactionActivity extends AppCompatActivity {
         String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
         if (currentCurrency.isEmpty()) currentCurrency = "USD";
 
-        String amount = etAmount.getText().toString();
+        String amount = etAmount.getText().toString().replaceAll(",", "");
         String note = etNote.getText().toString();
         String budget = "None";
 
@@ -328,6 +386,7 @@ public class AddTransactionActivity extends AppCompatActivity {
         }
 
         sharePreferenceUtils.saveTransaction(transaction);
+        EventBus.getDefault().post(new TransactionUpdateEvent(sharePreferenceUtils.getTransactionList()));
 
         if ("Expend".equals(transactionType) && !"None".equals(budget)) {
             BudgetManager budgetManager = new BudgetManager(this);
@@ -396,6 +455,13 @@ public class AddTransactionActivity extends AppCompatActivity {
                 spinner.setSelection(i);
                 break;
             }
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
         }
     }
 }

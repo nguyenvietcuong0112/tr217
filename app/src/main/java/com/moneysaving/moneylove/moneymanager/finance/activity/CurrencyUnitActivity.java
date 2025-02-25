@@ -2,6 +2,8 @@ package com.moneysaving.moneylove.moneymanager.finance.activity;
 
 
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import com.moneysaving.moneylove.moneymanager.finance.Utils.Utils;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.CurrencyUnitAdapter;
@@ -30,6 +32,23 @@ public class CurrencyUnitActivity extends AbsBaseActivity {
             binding.ivSelect.setEnabled(true);
             binding.ivSelect.setAlpha(1.0f);
 
+        });
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Not needed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Filter the list when text changes
+                currencyUnitAdapter.filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Not needed
+            }
         });
 
         binding.rvCurrencyUnit.setAdapter(currencyUnitAdapter);

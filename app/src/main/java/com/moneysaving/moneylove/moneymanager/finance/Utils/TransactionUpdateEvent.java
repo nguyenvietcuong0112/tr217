@@ -5,6 +5,8 @@ import com.moneysaving.moneylove.moneymanager.finance.model.TransactionModel;
 import java.util.List;
 
 public class TransactionUpdateEvent {
+
+
     private List<TransactionModel> transactionList;
 
     public TransactionUpdateEvent(List<TransactionModel> transactionList) {

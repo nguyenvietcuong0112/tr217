@@ -1,6 +1,9 @@
 package com.moneysaving.moneylove.moneymanager.finance.fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -84,6 +87,7 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void loadTransactionData() {
+        allTransactionList.clear();
         if (getArguments() != null && getArguments().containsKey("transactionList")) {
             String transactionListJson = getArguments().getString("transactionList");
             if (transactionListJson != null && !transactionListJson.isEmpty()) {
@@ -381,18 +385,25 @@ public class StatisticsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override
     public void onStop() {
+        if (EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
         super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTransactionUpdated(TransactionUpdateEvent event) {
         allTransactionList = event.getTransactionList();
+        loadTransactionData();
         updateStatistics();
+
+
     }
 }

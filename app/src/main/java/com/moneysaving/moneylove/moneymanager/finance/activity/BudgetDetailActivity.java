@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.moneysaving.moneylove.moneymanager.finance.R;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.BudgetManager;
-import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressView;
+import com.moneysaving.moneylove.moneymanager.finance.Utils.CircularProgressViewDetail;
 import com.moneysaving.moneylove.moneymanager.finance.Utils.SharePreferenceUtils;
 import com.moneysaving.moneylove.moneymanager.finance.adapter.BudgetAdapter;
 import com.moneysaving.moneylove.moneymanager.finance.model.BudgetItem;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class BudgetDetailActivity extends AppCompatActivity {
-    private CircularProgressView mainProgressView;
+    private CircularProgressViewDetail mainProgressView;
     private TextView tvTotalBudget, tvExpenses, tvRemaining;
     private RecyclerView rvBudgets;
     private BudgetManager budgetManager;
@@ -157,7 +157,7 @@ public class BudgetDetailActivity extends AppCompatActivity {
         TextView tvBudgetAmount = dialogView.findViewById(R.id.tv_budget_amount);
         TextView tvExpenses = dialogView.findViewById(R.id.tv_expenses);
         TextView tvRemaining = dialogView.findViewById(R.id.tv_remaining);
-        CircularProgressView progressView = dialogView.findViewById(R.id.progress_view);
+        CircularProgressViewDetail progressView = dialogView.findViewById(R.id.progress_view);
 
         double expenses = budgetManager.getExpensesForBudget(item.getName());
         double remaining = item.getTotalAmount() - expenses;

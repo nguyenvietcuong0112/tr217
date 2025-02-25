@@ -53,8 +53,8 @@ import java.util.stream.Collectors;
 
 public class HomeFragment extends Fragment {
 
-    private TextView tvTotalBalance, tvSelectedMonth, tvTotalExpenditure;
-    private LinearLayout llExpend, llIncome, llLoan,headerTotal;
+    private TextView tvTotalBalance, tvSelectedMonth, tvTotalExpenditure,tvTotalLabel;
+    private LinearLayout llExpend, llIncome, llLoan, headerTotal;
     private RecyclerView rvTransactions;
     private TransactionAdapter regularAdapter;
     private LoanTransactionAdapter loanAdapter;
@@ -91,6 +91,7 @@ public class HomeFragment extends Fragment {
         if (currentCurrency.isEmpty()) currentCurrency = "$";
 
         headerTotal = view.findViewById(R.id.header_total);
+        tvTotalLabel = view.findViewById(R.id.tv_total_label);
         tvTotalBalance = view.findViewById(R.id.tv_total_balance);
         tvSelectedMonth = view.findViewById(R.id.tv_selected_month);
         tvTotalExpenditure = view.findViewById(R.id.tv_total_expenditure);
@@ -251,14 +252,19 @@ public class HomeFragment extends Fragment {
             }
 
             loanAdapter.updateData(loanTransactions);
-
             NumberFormat formatter = NumberFormat.getInstance(Locale.US);
             tvTotalExpenditure.setText(currentCurrency + formatter.format(totalAmount));
 
         } else {
             rvTransactions.setAdapter(regularAdapter);
-
             headerTotal.setVisibility(View.VISIBLE);
+
+            if ("Expend".equals(currentTransactionType)) {
+                tvTotalLabel.setText("Total expenditure");
+            } else {
+                tvTotalLabel.setText("Total income");
+
+            }
 
             for (TransactionModel transaction : allTransactionList) {
                 if (transaction.getDate() == null || transaction.getDate().trim().isEmpty()) {
@@ -306,13 +312,10 @@ public class HomeFragment extends Fragment {
             }
 
             regularAdapter.updateData(filteredTransactionList, transactionsByDate);
-            regularAdapter.notifyDataSetChanged();
             updateTotalAmount();
-
             NumberFormat formatter = NumberFormat.getInstance(Locale.US);
             tvTotalExpenditure.setText(currentCurrency + formatter.format(totalAmount));
         }
-
         updateTotalAmount();
     }
 
@@ -500,6 +503,16 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharePreferenceUtils preferenceUtils = SharePreferenceUtils.getInstance(getContext());
+        allTransactionList = preferenceUtils.getTransactionList();
+        filterTransactions();
+        updateTotalAmount();
+        regularAdapter.notifyDataSetChanged();
+        loanAdapter.notifyDataSetChanged();
+    }
 
 
     @Override
@@ -518,6 +531,7 @@ public class HomeFragment extends Fragment {
         super.onStop();
     }
 
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTransactionUpdated(TransactionUpdateEvent event) {
@@ -525,18 +539,45 @@ public class HomeFragment extends Fragment {
         filterTransactions();
         updateTotalAmount();
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
             int deletedPosition = data.getIntExtra("deleted_position", -1);
-
             if (deletedPosition != -1) {
-                loadTransactionData();
-                filterTransactions();
-                updateTotalAmount();
+                SharePreferenceUtils preferenceUtils = SharePreferenceUtils.getInstance(getContext());
+                List<TransactionModel> allTransactions = preferenceUtils.getTransactionList();
+
+                for (int i = 0; i < filteredTransactionList.size(); i++) {
+                    TransactionModel currentTransaction = filteredTransactionList.get(i);
+                    boolean stillExists = false;
+                    for (TransactionModel t : allTransactions) {
+                        if (isSameTransaction(currentTransaction, t)) {
+                            stillExists = true;
+                            break;
+                        }
+                    }
+                    if (!stillExists) {
+                        filteredTransactionList.remove(i);
+                        break;
+                    }
+                }
             }
+            filterTransactions();
+            updateTotalAmount();
+            regularAdapter.notifyDataSetChanged();
+            loanAdapter.notifyDataSetChanged();
         }
     }
+
+    private boolean isSameTransaction(TransactionModel t1, TransactionModel t2) {
+        return t1.getDate().equals(t2.getDate())
+                && t1.getAmount().equals(t2.getAmount())
+                && t1.getCategoryName().equals(t2.getCategoryName())
+                && t1.getTransactionType().equals(t2.getTransactionType())
+                && t1.getTime().equals(t2.getTime());
+    }
+
+
 }

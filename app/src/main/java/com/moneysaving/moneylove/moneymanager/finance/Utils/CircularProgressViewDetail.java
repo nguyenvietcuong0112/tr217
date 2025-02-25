@@ -27,13 +27,13 @@ public class CircularProgressViewDetail extends View {
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
 
-        paint.setStrokeWidth(20f);
+        paint.setStrokeWidth(30f);
 
 
         textPaint = new Paint();
         textPaint.setAntiAlias(true);
         textPaint.setColor(Color.parseColor("#04A7FB"));
-        textPaint.setTextSize(40f);
+        textPaint.setTextSize(20f);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         rectF = new RectF();
@@ -53,16 +53,15 @@ public class CircularProgressViewDetail extends View {
         paint.setColor(Color.LTGRAY);
         canvas.drawArc(rectF, 0, 360, false, paint);
 
-        // Vẽ tiến trình (màu xanh lam)
         paint.setColor(progressColor);
         float sweepAngle = (360f * progress) / 100;
         canvas.drawArc(rectF, -90, sweepAngle, false, paint);
         if (showRemainingText) {
             textPaint.setColor(Color.parseColor("#1532B7"));
-            canvas.drawText("Remaining", getWidth() / 2, getHeight() / 2 - 20, textPaint);
-            canvas.drawText(progress + "%", getWidth() / 2, getHeight() / 2 + 40, textPaint);
+            canvas.drawText("Remaining", getWidth() / 2, getHeight() / 2 - 5, textPaint);
+            canvas.drawText(progress + "%", getWidth() / 2, getHeight() / 2 + 20, textPaint);
         } else {
-            textPaint.setTextSize(50f);
+            textPaint.setTextSize(30f);
             paint.setStrokeWidth(20f);
             textPaint.setColor(Color.parseColor("#1532B7"));
             canvas.drawText(progress + "%", getWidth() / 2, getHeight() / 2 + 20, textPaint);

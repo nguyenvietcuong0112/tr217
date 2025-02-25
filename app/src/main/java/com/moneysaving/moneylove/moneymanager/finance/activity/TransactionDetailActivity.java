@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
@@ -23,7 +24,7 @@ import java.util.Locale;
 
 public class TransactionDetailActivity extends AppCompatActivity {
     private TextView tvDate, tvAmount, tvCategory, tvNote, tvTransactionType;
-    private Button btnDelete;
+    private LinearLayout btnDelete;
     private ImageButton btnBack;
     private TransactionModel transaction;
 
@@ -75,7 +76,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
         tvTransactionType.setText(transaction.getTransactionType());
 
         String note = transaction.getNote();
-        tvNote.setText(note != null && !note.isEmpty() ? note : "No notes added");
+        tvNote.setText(note != null && !note.isEmpty() ? note : "");
 
         // Format amount with currency
         String currentCurrency = SharePreferenceUtils.getSelectedCurrencyCode(this);
@@ -121,6 +122,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
                 .show();
     }
 
+    int indexToDelete = -1;
     private void deleteTransaction() {
         SharePreferenceUtils preferenceUtils = SharePreferenceUtils.getInstance(this);
         List<TransactionModel> transactions = preferenceUtils.getTransactionList();
@@ -130,7 +132,7 @@ public class TransactionDetailActivity extends AppCompatActivity {
             return;
         }
 
-        int indexToDelete = -1;
+
         for (int i = 0; i < transactions.size(); i++) {
             TransactionModel t = transactions.get(i);
             if (t.getDate().equals(transaction.getDate()) &&
@@ -147,16 +149,11 @@ public class TransactionDetailActivity extends AppCompatActivity {
             showError("Transaction not found");
             return;
         }
-
         transactions.remove(indexToDelete);
         preferenceUtils.saveTransactionList(transactions);
-
-        EventBus.getDefault().post(new TransactionUpdateEvent(transactions));
-
         Intent resultIntent = new Intent();
         resultIntent.putExtra("deleted_position", indexToDelete);
         setResult(RESULT_OK, resultIntent);
-
         Toast.makeText(this, "Transaction deleted successfully", Toast.LENGTH_SHORT).show();
         finish();
     }

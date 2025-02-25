@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,40 +14,40 @@
             android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_back"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Transactions"
-            android:textSize="@dimen/_18sdp"
-            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
             android:fontFamily="@font/roboto_bold"
+            android:text="Transactions"
             android:textColor="@color/black"
-            android:layout_centerHorizontal="true"/>
+            android:textSize="@dimen/_18sdp"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/roboto_bold"
             android:text="Edit"
             android:textColor="@color/blue"
-            android:fontFamily="@font/roboto_bold"
-            android:textSize="@dimen/_12sdp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"/>
+            android:textSize="@dimen/_12sdp" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/_10sdp"
         android:background="@drawable/bg_white"
-        android:layout_gravity="center"
         android:gravity="center"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
@@ -65,53 +65,107 @@
             android:layout_height="wrap_content"
             android:text="Date"
             android:textColor="@color/black"
-            android:visibility="gone"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
 
         <TextView
             android:id="@+id/tv_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Amount"
-            android:textSize="@dimen/_30sdp"
-            android:textStyle="bold"
+            android:layout_marginTop="@dimen/_5sdp"
             android:fontFamily="@font/roboto_bold"
+            android:text="Amount"
             android:textColor="#3151E7"
-            android:layout_marginTop="@dimen/_5sdp" />
+            android:textSize="@dimen/_30sdp"
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:textSize="18sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/black"
-            android:layout_marginTop="16dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:background="#EAECF0" />
 
-        <TextView
-            android:id="@+id/tv_note"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Note"
-            android:textSize="16sp"
-            android:layout_marginTop="16dp" />
-
-        <Button
-            android:id="@+id/btn_delete"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete Transaction"
-            android:layout_marginTop="32dp"
-            android:backgroundTint="@color/red"
-            android:textColor="@color/white" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_bold"
+                android:gravity="left"
+                android:text="Category"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_regular"
+                android:text="Category"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/roboto_bold"
+                android:gravity="left"
+                android:text="Note"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:text="Note"
+                android:textColor="#49566A"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+
     </LinearLayout>
 
 
+    <LinearLayout
+        android:id="@+id/btn_delete"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/bg_btn_delete"
+        android:layout_marginHorizontal="@dimen/_40sdp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:text="Delete Transaction"
+            android:layout_gravity="center"
+            android:textColor="#F04438"
+            android:textSize="@dimen/_12sdp" />
+
+    </LinearLayout>
 
 
 </LinearLayout>
