@@ -306,6 +306,7 @@ public class HomeFragment extends Fragment {
             }
 
             regularAdapter.updateData(filteredTransactionList, transactionsByDate);
+            regularAdapter.notifyDataSetChanged();
             updateTotalAmount();
 
             NumberFormat formatter = NumberFormat.getInstance(Locale.US);

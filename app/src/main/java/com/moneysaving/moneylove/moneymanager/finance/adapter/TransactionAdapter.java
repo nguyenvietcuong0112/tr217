@@ -52,7 +52,12 @@ public class TransactionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             items.addAll(transactionList);
         }
 
-        notifyDataSetChanged();
+        // Đảm bảo chạy trên UI Thread
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            notifyDataSetChanged();
+        } else {
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(this::notifyDataSetChanged);
+        }
     }
 
     @Override
